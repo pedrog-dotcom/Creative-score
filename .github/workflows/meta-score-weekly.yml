@@ -60,6 +60,7 @@ jobs:
 
       - name: Notify Slack via Email
         if: always()
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -70,8 +71,5 @@ jobs:
           subject: Meta Score — ${{ job.status }}
           to: ${{ secrets.SLACK_CHANNEL_EMAIL }}
           from: Meta Score <${{ secrets.EMAIL_USERNAME }}>
-          body: |
-            Status: ${{ job.status }}
-            Repo: ${{ github.repository }}
-            Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          body_file: summary_email.txt
 
