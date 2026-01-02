@@ -2,21 +2,23 @@ name: Meta Creative Score (Weekly)
 
 on:
   schedule:
-    - cron: "0 9 * * 1" # 06:00 BRT (UTC-3) = 09:00 UTC
+    # Toda segunda-feira às 06:00 no horário de São Paulo
+    # GitHub cron é UTC → 06:00 BRT (UTC-3) = 09:00 UTC
+    - cron: "0 9 * * 1"
   workflow_dispatch: {}
 
 jobs:
   run-score:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     permissions:
-      contents: write  # necessário para commitar history/ de volta no repo
+      contents: write  # necessário para commitar history/ no repo
 
     env:
       META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
       META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
       META_CAMPAIGN_ID: ${{ secrets.META_CAMPAIGN_ID }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       TZ: America/Sao_Paulo
 
     steps:
@@ -34,11 +36,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run score automation
-        id: run_script
         run: |
           python "Performance Score.py"
 
-      # Commita a pasta history/ e o latest CSV
+      # Commita a pasta history/ e o latest CSV de volta no repo
       - name: Commit history
         if: always()
         run: |
@@ -48,7 +49,7 @@ jobs:
           git diff --cached --quiet || git commit -m "chore: add score history (run $GITHUB_RUN_ID)"
           git push
 
-      # Artifact também (opcional, mas útil)
+      # Sobe os arquivos como artifact (backup e fácil download)
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,21 +61,24 @@ jobs:
             *.log
           if-no-files-found: warn
 
-      # Slack - sucesso
+      # Envia email para o canal do Slack (email do canal)
       - name: Notify Slack via Email
-      if: always()
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.gmail.com
-        server_port: 587
-        secure: false
-        username: ${{ secrets.EMAIL_USERNAME }}
-        password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: |
-          Meta Score — ${{ job.status }}
-        to: ${{ secrets.SLACK_CHANNEL_EMAIL }}
-        from: Meta Score <${{ secrets.EMAIL_USERNAME }}>
-        body: |
-          Status: ${{ job.status }}
-          Repo: ${{ github.repository }}
-          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          secure: false
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Meta Score — ${{ job.status }}
+          to: ${{ secrets.SLACK_CHANNEL_EMAIL }}
+          from: Meta Score <${{ secrets.EMAIL_USERNAME }}>
+          body: |
+            Status: ${{ job.status }}
+            Repo: ${{ github.repository }}
+            Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Arquivos:
+            - latest: creative_score_automation.csv
+            - histórico: pasta history/ (commitada no repo)
