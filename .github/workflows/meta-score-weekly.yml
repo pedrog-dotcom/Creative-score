@@ -2,10 +2,9 @@ name: Meta Creative Score (Weekly)
 
 on:
   schedule:
-    # Toda segunda-feira às 06:00 no horário de São Paulo
-    # GitHub cron é UTC → 06:00 BRT (UTC-3) = 09:00 UTC
+    # Segunda-feira 06:00 BRT (UTC-3) = 09:00 UTC
     - cron: "0 9 * * 1"
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   run-score:
@@ -13,7 +12,7 @@ jobs:
     timeout-minutes: 30
 
     permissions:
-      contents: write  # necessário para commitar history/ no repo
+      contents: write
 
     env:
       META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
@@ -39,7 +38,6 @@ jobs:
         run: |
           python "Performance Score.py"
 
-      # Commita a pasta history/ e o latest CSV de volta no repo
       - name: Commit history
         if: always()
         run: |
@@ -49,7 +47,6 @@ jobs:
           git diff --cached --quiet || git commit -m "chore: add score history (run $GITHUB_RUN_ID)"
           git push
 
-      # Sobe os arquivos como artifact (backup e fácil download)
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -61,7 +58,6 @@ jobs:
             *.log
           if-no-files-found: warn
 
-      # Envia email para o canal do Slack (email do canal)
       - name: Notify Slack via Email
         if: always()
         uses: dawidd6/action-send-mail@v3
