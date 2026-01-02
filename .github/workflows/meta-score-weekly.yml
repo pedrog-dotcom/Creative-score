@@ -2,23 +2,25 @@ name: Meta Creative Score (Weekly)
 
 on:
   schedule:
-    # Toda segunda-feira às 06:00 no horário de São Paulo
-    # GitHub usa UTC → 06:00 BRT = 09:00 UTC
-    - cron: "0 9 * * 1"
-  workflow_dispatch:
+    - cron: "0 9 * * 1" # 06:00 BRT (UTC-3) = 09:00 UTC
+  workflow_dispatch: {}
 
 jobs:
   run-score:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # necessário para commitar history/ de volta no repo
+
     env:
       META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
       META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
       META_CAMPAIGN_ID: ${{ secrets.META_CAMPAIGN_ID }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       TZ: America/Sao_Paulo
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -32,14 +34,47 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run score automation
+        id: run_script
         run: |
           python "Performance Score.py"
 
-      - name: Upload results
+      # Commita a pasta history/ e o latest CSV
+      - name: Commit history
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add history/ creative_score_automation.csv || true
+          git diff --cached --quiet || git commit -m "chore: add score history (run $GITHUB_RUN_ID)"
+          git push
+
+      # Artifact também (opcional, mas útil)
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: meta-score-output
           path: |
-            *.csv
+            history/*.csv
+            creative_score_automation.csv
             *.log
+          if-no-files-found: warn
+
+      # Slack - sucesso
+      - name: Notify Slack via Email
+      if: always()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        secure: false
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: |
+          Meta Score — ${{ job.status }}
+        to: ${{ secrets.SLACK_CHANNEL_EMAIL }}
+        from: Meta Score <${{ secrets.EMAIL_USERNAME }}>
+        body: |
+          Status: ${{ job.status }}
+          Repo: ${{ github.repository }}
+          Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
