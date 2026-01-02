@@ -468,8 +468,20 @@ if __name__ == "__main__":
         df["performance_score"] = None
 
     # --------------------------------------------------------------------------
-    # EXPORT
+    # EXPORT (run atual + histórico)
     # --------------------------------------------------------------------------
+    run_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+    
+    # garante pasta history/
+    history_dir = Path("history")
+    history_dir.mkdir(parents=True, exist_ok=True)
+    
+    # arquivo "do run"
+    run_file = history_dir / f"scores_{run_at}.csv"
+    
+    # mantém também um "latest" na raiz (opcional)
+    latest_file = "creative_score_automation.csv"
+    
     export_cols = [
         "campaign_name_std", "adset_name_std", "ad_name_std", "ad_id",
         "effective_status", "created_dt",
@@ -481,12 +493,22 @@ if __name__ == "__main__":
         "w_ctr", "w_connect_rate", "w_bounce_rate", "w_cost_per_checkout", "w_cac",
     ]
     export_cols = [c for c in export_cols if c in df.columns]
-
-    out_file = "creative_score_automation.csv"
-    df[export_cols].to_csv(out_file, index=False)
+    
+    out = df[export_cols].copy()
+    out["run_at"] = run_at
+    
+    # salva o run histórico
+    out.to_csv(run_file, index=False)
+    
+    # salva o latest (para facilitar download rápido)
+    out.to_csv(latest_file, index=False)
+    
+    print(f"✅ Histórico salvo em: {run_file}")
+    print(f"✅ Latest salvo em: {latest_file}")
 
     active_final = int((df["effective_status"] == "ACTIVE").sum())
     print("-" * 70)
     print(f"✅ SUCESSO! Relatório gerado: {out_file}")
     print(f"📌 Ativos finais (no dataframe): {active_final} (mínimo requerido: {MIN_ACTIVE_AFTER})")
     print("-" * 70)
+
