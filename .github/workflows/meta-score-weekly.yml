@@ -63,8 +63,8 @@ jobs:
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
-          server_port: 587
-          secure: false
+          server_port: 465
+          secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Meta Score — ${{ job.status }}
@@ -75,6 +75,3 @@ jobs:
             Repo: ${{ github.repository }}
             Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Arquivos:
-            - latest: creative_score_automation.csv
-            - histórico: pasta history/ (commitada no repo)
