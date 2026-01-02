@@ -55,6 +55,7 @@ jobs:
           path: |
             history/*.csv
             creative_score_automation.csv
+            summary_email.txt
             *.log
           if-no-files-found: warn
 
