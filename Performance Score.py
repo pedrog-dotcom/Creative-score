@@ -469,6 +469,129 @@ if __name__ == "__main__":
         df["performance_score"] = None
 
     # --------------------------------------------------------------------------
+    # RESUMO PARA EMAIL (Slack via email)
+    # --------------------------------------------------------------------------
+    def fmt_money(x):
+        try:
+            return f"R$ {float(x):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        except Exception:
+            return "R$ 0,00"
+    
+    def fmt_pct(x):
+        try:
+            return f"{float(x)*100:.2f}%"
+        except Exception:
+            return "0,00%"
+    
+    def fmt_num(x):
+        try:
+            return f"{float(x):.2f}"
+        except Exception:
+            return "—"
+    
+    def fmt_cpa_vs_avg(cpa, avg):
+        if avg is None or avg == 0 or (cpa is None) or (pd.isna(cpa)) or cpa == 0:
+            return "—"
+        return f"{(cpa/avg):.2f}x"
+    
+    # total spend da campanha na janela (para share)
+    total_spend = float(df["spend_std"].sum()) if "spend_std" in df.columns else 0.0
+    
+    # média de CPA (usando CAC 1d_click, que é o que você usa no score)
+    cpa_base = df[(df.get("has_purchase_inc", False)) & (df["cac"] > 0)].copy()
+    avg_cpa = float(cpa_base["cac"].mean()) if not cpa_base.empty else None
+    
+    # helper para montar linhas
+    def build_lines(subdf, title, max_rows=999):
+        lines = []
+        lines.append(title)
+        lines.append("-" * len(title))
+        if subdf.empty:
+            lines.append("Nenhum item.\n")
+            return lines
+    
+        # cabeçalho
+        lines.append("Anúncio | Invest | Share | CPA(1d) | vs média | Score")
+        lines.append("------ | ------ | ----- | ------- | -------- | -----")
+    
+        subdf = subdf.head(max_rows).copy()
+    
+        for _, r in subdf.iterrows():
+            name = str(r.get("ad_name_std") or r.get("ad_name_inc") or r.get("ad_name") or r.get("ad_id"))
+            spend = float(r.get("spend_std", 0.0) or 0.0)
+            share = (spend / total_spend) if total_spend > 0 else 0.0
+            cpa = float(r.get("cac", 0.0) or 0.0)
+            score = r.get("performance_score", None)
+    
+            cpa_str = fmt_money(cpa) if cpa and cpa > 0 else "sem purchase (1d)"
+            score_str = fmt_num(score) if score is not None and not pd.isna(score) else "—"
+    
+            lines.append(
+                f"{name} | {fmt_money(spend)} | {fmt_pct(share)} | {cpa_str} | {fmt_cpa_vs_avg(cpa, avg_cpa)} | {score_str}"
+            )
+    
+        lines.append("")  # linha em branco
+        return lines
+    
+    # -------------------------
+    # Conjuntos: pausados por má performance (score < 3)
+    # -------------------------
+    paused_score_ids = set(to_pause_score) if 'to_pause_score' in globals() else set()
+    paused_score_df = df[df["ad_id"].isin(paused_score_ids)].copy()
+    
+    # garantir score e cac presentes
+    if "performance_score" not in paused_score_df.columns:
+        # se você só mergeia score depois, pode puxar do eligible (se existir)
+        try:
+            paused_score_df = paused_score_df.merge(
+                eligible[["ad_id", "performance_score"]],
+                on="ad_id", how="left"
+            )
+        except Exception:
+            pass
+    
+    paused_score_df = paused_score_df.sort_values("performance_score", ascending=True)
+    
+    # -------------------------
+    # Top 5 melhores criativos (entre elegíveis com score calculado)
+    # Preferência: usar "eligible" se existir, porque ali score está garantido
+    # -------------------------
+    top_df = pd.DataFrame()
+    try:
+        top_df = eligible.copy()
+        # se você quer só os que ficaram ativos após pausas:
+        # top_df = top_df[top_df["ad_id"].isin(df[df["effective_status"]=="ACTIVE"]["ad_id"])]
+        top_df = top_df.sort_values("performance_score", ascending=False).head(5)
+    except Exception:
+        # fallback: tenta usar df se tiver score
+        if "performance_score" in df.columns:
+            top_df = df.dropna(subset=["performance_score"]).sort_values("performance_score", ascending=False).head(5)
+    
+    # -------------------------
+    # Montar arquivo do email
+    # -------------------------
+    run_url = os.getenv("GITHUB_SERVER_URL", "https://github.com") + "/" + os.getenv("GITHUB_REPOSITORY", "") + "/actions/runs/" + os.getenv("GITHUB_RUN_ID", "")
+    run_line = f"Run: {run_url}" if os.getenv("GITHUB_RUN_ID") else "Run: (local)"
+    
+    lines = []
+    lines.append("Meta Score — Resumo da Execução")
+    lines.append("=" * 28)
+    lines.append(f"Data (UTC): {run_at}")
+    lines.append(run_line)
+    lines.append("")
+    lines.append(f"CPA médio (base: anúncios com purchase 1d): {fmt_money(avg_cpa) if avg_cpa else '—'}")
+    lines.append(f"Total investido na janela (campanha): {fmt_money(total_spend)}")
+    lines.append("")
+    
+    lines += build_lines(paused_score_df, f"Pausados por má performance (score < {SCORE_CUTOFF})", max_rows=200)
+    lines += build_lines(top_df, "Top 5 melhores criativos (por score)", max_rows=5)
+    
+    with open("summary_email.txt", "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    
+    print("✅ Resumo do email gerado: summary_email.txt")
+    
+    # --------------------------------------------------------------------------
     # EXPORT (run atual + histórico)
     # --------------------------------------------------------------------------
     run_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
@@ -511,6 +634,7 @@ if __name__ == "__main__":
     print("-" * 70)
     print(f"📌 Ativos finais (no dataframe): {active_final} (mínimo requerido: {MIN_ACTIVE_AFTER})")
     print("-" * 70)
+
 
 
 
