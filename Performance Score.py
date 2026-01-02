@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import pandas as pd
 from dotenv import load_dotenv
@@ -511,4 +512,5 @@ if __name__ == "__main__":
     print(f"✅ SUCESSO! Relatório gerado: {out_file}")
     print(f"📌 Ativos finais (no dataframe): {active_final} (mínimo requerido: {MIN_ACTIVE_AFTER})")
     print("-" * 70)
+
 
