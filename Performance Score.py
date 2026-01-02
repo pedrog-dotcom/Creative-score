@@ -509,8 +509,8 @@ if __name__ == "__main__":
 
     active_final = int((df["effective_status"] == "ACTIVE").sum())
     print("-" * 70)
-    print(f"✅ SUCESSO! Relatório gerado: {out_file}")
     print(f"📌 Ativos finais (no dataframe): {active_final} (mínimo requerido: {MIN_ACTIVE_AFTER})")
     print("-" * 70)
+
 
 
