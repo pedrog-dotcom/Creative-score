@@ -36,6 +36,8 @@ MIN_ACTIVE_AFTER = 30
 MIN_IMPRESSIONS_SCORE = 10000
 MIN_AGE_DAYS_SCORE = 6
 
+run_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+
 # ==============================================================================
 # HELPERS
 # ==============================================================================
