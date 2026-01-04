@@ -70,7 +70,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add history/ creative_score_automation.csv creatives_output/ summary_email.txt || true
+          git add history/ creative_score_automation.csv creatives_output/ ai_cache/ summary_email.txt || true
           git diff --cached --quiet || git commit -m "chore: weekly run outputs (run $GITHUB_RUN_ID)"
           git push
 
