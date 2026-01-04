@@ -374,6 +374,10 @@ if __name__ == "__main__":
 
     # KPIs
     print("4) Calculando KPIs...")
+    # Inicializa colunas para auditoria e IA
+    df["pause_reason"] = ""
+    df["is_top5"] = False
+
     df = compute_kpis(df)
 
     # Contagem de ativos atual
@@ -417,6 +421,9 @@ if __name__ == "__main__":
     # Atualiza status localmente (para não depender de uma nova leitura)
     df.loc[df["ad_id"].isin(to_pause_hard), "effective_status"] = "PAUSED"
 
+    # Marca motivo de pausa (HARD STOP)
+    df.loc[df["ad_id"].isin(to_pause_hard), "pause_reason"] = "HARD_STOP"
+
     # --------------------------------------------------------------------------
     # REGRA B: SCORE + PAUSAR score < 3 (somente >6 dias e >=10k imp)
     # --------------------------------------------------------------------------
@@ -435,6 +442,16 @@ if __name__ == "__main__":
 
     if not eligible.empty:
         eligible = compute_score_with_correlation_weights(eligible)
+
+        # Marca TOP 5 criativos (entre elegíveis)
+        top5_ids = (
+            eligible.sort_values("performance_score", ascending=False)
+                    .head(5)["ad_id"]
+                    .astype(str)
+                    .tolist()
+        )
+        
+        df.loc[df["ad_id"].astype(str).isin(top5_ids), "is_top5"] = True
 
         # Quem será pausado por score
         score_bad = eligible[eligible["performance_score"] < SCORE_CUTOFF].copy()
@@ -457,6 +474,9 @@ if __name__ == "__main__":
 
         # Atualiza localmente
         df.loc[df["ad_id"].isin(to_pause_score), "effective_status"] = "PAUSED"
+
+        # Marca motivo de pausa (SCORE)
+        df.loc[df["ad_id"].isin(to_pause_score), "pause_reason"] = "SCORE_LT_3"
 
         # Grava score de volta no df principal
         df = df.merge(
@@ -634,6 +654,7 @@ if __name__ == "__main__":
     print("-" * 70)
     print(f"📌 Ativos finais (no dataframe): {active_final} (mínimo requerido: {MIN_ACTIVE_AFTER})")
     print("-" * 70)
+
 
 
 
