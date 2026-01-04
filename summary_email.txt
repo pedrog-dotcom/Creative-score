@@ -1,0 +1,21 @@
+Meta Score — Resumo da Execução
+============================
+Data (UTC): 2026-01-04T23-03-59Z
+Run: https://github.com/pedrog-dotcom/Creative-score/actions/runs/20700466162
+
+CPA médio (base: anúncios com purchase 1d): R$ 629,83
+Total investido na janela (campanha): R$ 388.513,59
+
+Pausados por má performance (score < 3.0)
+-----------------------------------------
+Nenhum item.
+
+Top 5 melhores criativos (por score)
+------------------------------------
+Anúncio | Invest | Share | CPA(1d) | vs média | Score
+------ | ------ | ----- | ------- | -------- | -----
+WL349_ReactCanetasClandestinas_VAR3_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 688,45 | 0.18% | R$ 229,48 | 0.36x | 8.36
+WL348_ReactCanetasClandestinas_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 766,06 | 0.20% | R$ 255,35 | 0.41x | 7.90
+WL288_PAMFRISONDEZ1_VAR5_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 12.833,42 | 3.30% | R$ 313,01 | 0.50x | 7.63
+WL344_GravidadeDoMeuCaso_VAR2_December_BR_VID_FB_Normal_Customer_NoActor_In-house_Results_Emotional_BeforeAfter_Credibility_ImprovedHealth_UGC-Anchor | R$ 858,32 | 0.22% | R$ 286,11 | 0.45x | 7.37
+WL284_PAMFRISONDEZ1_VAR1_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 1.542,70 | 0.40% | R$ 257,12 | 0.41x | 7.28
