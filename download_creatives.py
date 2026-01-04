@@ -240,14 +240,11 @@ def extract_frames(video_path: Path, frames_dir: Path, frames_count: int) -> Lis
 # Meta: coletar ads e creatives
 # =========================
 def get_active_ads_in_account() -> List[Dict[str, Any]]:
-    """
-    Puxa TODOS os anúncios ATIVOS na conta.
-    """
     fields = "id,name,effective_status,adset_id,campaign_id,creative{id}"
     node = f"{AD_ACCOUNT_ID}/ads"
     params = {
         "fields": fields,
-        "effective_status": ["ACTIVE"],  # filtro server-side
+        "effective_status": json.dumps(["ACTIVE"]),
         "limit": 200,
     }
     return graph_get_paged(node, params)
