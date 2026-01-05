@@ -636,6 +636,9 @@ if __name__ == "__main__":
         "lpv_inc", "custom_event_inc", "inc_initiate_checkout", "inc_purchase",
         "ctr", "connect_rate", "bounce_rate", "cost_per_checkout", "cac",
         "performance_score",
+        # flags p/ auditoria + IA
+        "pause_reason",
+        "is_top5",
         "w_ctr", "w_connect_rate", "w_bounce_rate", "w_cost_per_checkout", "w_cac",
     ]
     export_cols = [c for c in export_cols if c in df.columns]
