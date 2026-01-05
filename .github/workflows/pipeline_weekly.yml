@@ -18,9 +18,11 @@ jobs:
       META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
       META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
       META_CAMPAIGN_ID: "120240998569260670"
+
       EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       SLACK_CHANNEL_EMAIL: ${{ secrets.SLACK_CHANNEL_EMAIL }}
+
       TZ: America/Sao_Paulo
 
       # (Opcional) IA
@@ -32,6 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -49,30 +53,41 @@ jobs:
           pip install -r requirements.txt
           pip install moviepy pillow
 
-      # 1) Score (o seu script atual)
+      # 1) Score
       - name: Run performance score
         run: |
           python "Performance Score.py"
 
-      # 2) Download dos criativos (ativos + pausados por score/hard stop)
+      # 2) Download dos criativos
       - name: Download creatives
         run: |
           python download_creatives.py
 
-      # 3) Análise IA (usa frames e métricas)
+      # Debug: ajuda a ver rapidamente se o catálogo foi gerado
+      - name: Debug creatives_output
+        if: always()
+        run: |
+          echo "---- LS creatives_output ----"
+          ls -la creatives_output || true
+          echo "---- FIND catalog ----"
+          find . -maxdepth 4 -iname "catalog*" || true
+
+      # 3) Análise IA (frames + métricas)
       - name: AI analyze creatives
+        if: always()
         run: |
           python ai_analyze_creatives.py
 
-      # Commit de arquivos gerados (history + creatives_output + analysis)
+      # Commit de arquivos gerados (history + creatives_output + cache)
       - name: Commit generated files
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
           git add history/ creative_score_automation.csv creatives_output/ ai_cache/ summary_email.txt || true
           git diff --cached --quiet || git commit -m "chore: weekly run outputs (run $GITHUB_RUN_ID)"
-          git push
+          git push || true
 
       # Artifacts (backup)
       - name: Upload artifacts
@@ -84,6 +99,7 @@ jobs:
             history/*.csv
             creative_score_automation.csv
             creatives_output/**
+            ai_cache/**
             summary_email.txt
             *.log
           if-no-files-found: warn
