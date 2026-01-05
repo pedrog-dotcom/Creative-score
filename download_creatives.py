@@ -533,11 +533,27 @@ def main():
         time.sleep(0.15)  # evita martelar API
 
     # salvar catálogo
+    # Sempre gera o catálogo, mesmo vazio.
+    # Isso evita quebrar a etapa seguinte (AI), que depende da existência do arquivo.
     catalog_path = OUT_DIR / "catalog.csv"
-    if catalog_rows:
-        with open(catalog_path, "w", encoding="utf-8", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=list(catalog_rows[0].keys()))
-            writer.writeheader()
+    default_fields = [
+        "ad_id",
+        "ad_name",
+        "ad_name_std",
+        "effective_status",
+        "campaign_id",
+        "adset_id",
+        "creative_id",
+        "media_type",
+        "local_path",
+        "frames_dir",
+        "source",
+    ]
+    fieldnames = list(catalog_rows[0].keys()) if catalog_rows else default_fields
+    with open(catalog_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        if catalog_rows:
             writer.writerows(catalog_rows)
 
     print(f"✅ Catálogo gerado: {catalog_path} ({len(catalog_rows)} itens)")
