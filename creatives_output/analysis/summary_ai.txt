@@ -1,0 +1,14 @@
+IA - Resumo da Execução
+======================
+run_at (UTC): 2026-01-05T16:15:03Z
+analisados_novos: 0
+reutilizados_cache: 0
+falhas: 0
+
+Pausados (LOW_SCORE ou HARD_STOP) - com análise:
+-----------------------------------------------
+Nenhum.
+
+Top performers (marcados como TOP_PERFORMER) - com análise:
+-----------------------------------------------------------
+Nenhum (você pode marcar is_top5 no score para habilitar).

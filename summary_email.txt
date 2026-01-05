@@ -1,21 +1,24 @@
 Meta Score — Resumo da Execução
 ============================
-Data (UTC): 2026-01-04T23-03-59Z
-Run: https://github.com/pedrog-dotcom/Creative-score/actions/runs/20700466162
+Data (UTC): 2026-01-05T16-13-56Z
+Run: https://github.com/pedrog-dotcom/Creative-score/actions/runs/20721507344
 
-CPA médio (base: anúncios com purchase 1d): R$ 629,83
-Total investido na janela (campanha): R$ 388.513,59
+CPA médio (base: anúncios com purchase 1d): R$ 657,70
+Total investido na janela (campanha): R$ 383.512,04
 
 Pausados por má performance (score < 3.0)
 -----------------------------------------
-Nenhum item.
+Anúncio | Invest | Share | CPA(1d) | vs média | Score
+------ | ------ | ----- | ------- | -------- | -----
+WL308_VergonhaNaCara_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BetaBoechat_CreatorMade_Confidence_NA_Emotional_Testimonial_Care_ImprovedQualityOfLife_UGC-Influencer | R$ 1.031,33 | 0.27% | sem purchase (1d) | — | 1.35
+WL267_LIDIASANTOSDEZ1_VAR1_NA_BR_VID_FB_Normal_ContentCreator_LIDIASANTOSDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 1.121,07 | 0.29% | sem purchase (1d) | — | 1.89
 
 Top 5 melhores criativos (por score)
 ------------------------------------
 Anúncio | Invest | Share | CPA(1d) | vs média | Score
 ------ | ------ | ----- | ------- | -------- | -----
-WL349_ReactCanetasClandestinas_VAR3_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 688,45 | 0.18% | R$ 229,48 | 0.36x | 8.36
-WL348_ReactCanetasClandestinas_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 766,06 | 0.20% | R$ 255,35 | 0.41x | 7.90
-WL288_PAMFRISONDEZ1_VAR5_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 12.833,42 | 3.30% | R$ 313,01 | 0.50x | 7.63
-WL344_GravidadeDoMeuCaso_VAR2_December_BR_VID_FB_Normal_Customer_NoActor_In-house_Results_Emotional_BeforeAfter_Credibility_ImprovedHealth_UGC-Anchor | R$ 858,32 | 0.22% | R$ 286,11 | 0.45x | 7.37
-WL284_PAMFRISONDEZ1_VAR1_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 1.542,70 | 0.40% | R$ 257,12 | 0.41x | 7.28
+WL349_ReactCanetasClandestinas_VAR3_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 737,90 | 0.19% | R$ 245,97 | 0.37x | 7.49
+WL288_PAMFRISONDEZ1_VAR5_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 13.631,12 | 3.55% | R$ 324,55 | 0.49x | 7.39
+T295_VOY_WL_WHT_MARIANAMAXIMO_DEZ2_V1 | R$ 598,63 | 0.16% | R$ 149,66 | 0.23x | 6.94
+WL316_CanetasEmagrecedoras_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_ResearchFactBased_Credibility_ImprovedHealth_UGC-Influencer | R$ 3.652,31 | 0.95% | R$ 456,54 | 0.69x | 6.86
+WL233_AnteseDepois21kg_VAR4_November_BR_IMG_FB_Normal_Customer_NoActor_In-house_Results_NA_Urgency_BeforeAfter_Efficacy_ImprovedQualityOfLife_UGC-Anchor | R$ 8.349,10 | 2.18% | R$ 363,00 | 0.55x | 6.65
