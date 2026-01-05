@@ -338,12 +338,32 @@ def extract_json_from_openai(resp_json: dict) -> dict:
 def main():
     run_at = now_utc_iso()
 
-    if not Path(CATALOG_PATH).exists():
-        raise RuntimeError(f"Catálogo não encontrado: {CATALOG_PATH}")
+    # Catálogo pode ter nomes diferentes em versões anteriores. Tentamos alguns fallbacks.
+    catalog_candidates = [
+        Path(CATALOG_PATH),
+        Path("creatives_output/catalog_ads.csv"),
+        Path("creatives_output/catalogo.csv"),
+    ]
+    catalog_path = next((p for p in catalog_candidates if p.exists()), None)
+    if not catalog_path:
+        # Em vez de quebrar o pipeline inteiro, geramos um resumo vazio e saímos com sucesso.
+        # Assim você ainda recebe o email/artefatos do score.
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        with open(SUMMARY_PATH, "w", encoding="utf-8") as f:
+            f.write(
+                "IA - Resumo da Execução\n"
+                "======================\n"
+                f"run_at (UTC): {run_at}\n"
+                "\n"
+                "⚠️ Catálogo de criativos não encontrado nesta execução.\n"
+                "Verifique o step 'Download creatives' e o caminho 'creatives_output/catalog.csv'.\n"
+            )
+        print(f"⚠️ Catálogo não encontrado. Resumo vazio gerado em: {SUMMARY_PATH}")
+        return
     if not Path(SCORE_PATH).exists():
         raise RuntimeError(f"Score latest não encontrado: {SCORE_PATH}")
 
-    catalog = pd.read_csv(CATALOG_PATH)
+    catalog = pd.read_csv(catalog_path)
     score = pd.read_csv(SCORE_PATH)
 
     # Normaliza colunas esperadas
