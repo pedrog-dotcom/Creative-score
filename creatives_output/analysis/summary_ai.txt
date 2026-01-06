@@ -1,6 +1,6 @@
 IA - Resumo da Execução
 ======================
-run_at (UTC): 2026-01-06T16:56:08Z
+run_at (UTC): 2026-01-06T17:31:54Z
 analisados_novos: 0
 reutilizados_cache: 0
 falhas: 0
