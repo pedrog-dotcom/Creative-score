@@ -9,8 +9,20 @@ import time
 import random
 import inspect
 import hashlib
+import logging
 import requests
 from pathlib import Path
+
+# Configuração de Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("download_creatives.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 from datetime import datetime, timezone
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
@@ -110,6 +122,34 @@ class GraphRequestError(Exception):
         self.payload = payload
 
 
+def graph_batch_get(batch_requests: list, token: str) -> list:
+    """
+    Executa múltiplas requisições em um único lote (Batch API).
+    batch_requests: lista de dicts com {"method": "GET", "relative_url": "..."}
+    """
+    url = f"https://graph.facebook.com/{API_VERSION}"
+    payload = {
+        "access_token": token,
+        "batch": json.dumps(batch_requests)
+    }
+    
+    for attempt in range(5):
+        try:
+            r = session.post(url, data=payload, timeout=120)
+            if r.status_code == 429 or "User request limit reached" in r.text:
+                wait = min(300, (60 * (attempt + 1)))
+                logger.warning(f"  [BATCH RATE LIMIT] Esperando {wait}s...")
+                time.sleep(wait)
+                continue
+            
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            logger.error(f"  [BATCH ERROR] Tentativa {attempt+1}: {e}")
+            time.sleep(5)
+            
+    return []
+
 def graph_get(node: str, token: str, fields: str | None = None, **params) -> dict:
     url = f"{BASE_URL}/{node.lstrip('/')}"
     q = {"access_token": token}
@@ -142,9 +182,10 @@ def graph_get(node: str, token: str, fields: str | None = None, **params) -> dic
                 sub = err.get("error_subcode")
                 msg = err.get("message", "")
 
-                if code == 17 or sub == 2446079 or "User request limit reached" in str(msg):
-                    wait = min(60, (2 ** attempt) + random.random() * 3)
-                    print(f"  [RATE LIMIT] code={code} sub={sub}. Esperando {wait:.1f}s e tentando novamente...")
+                if code == 17 or sub == 2446079 or "User request limit reached" in str(msg) or code == 80004:
+                    # Exponential backoff mais agressivo para rate limit persistente
+                    wait = min(300, (30 * (attempt + 1)) + random.random() * 10)
+                    logger.warning(f"  [RATE LIMIT] code={code} sub={sub}. Tentativa {attempt+1}/8. Esperando {wait:.1f}s...")
                     time.sleep(wait)
                     continue
 
@@ -173,7 +214,7 @@ def graph_get_paged(node: str, token: str, fields: str, **params):
                 break
             except GraphServer500:
                 wait = (2 ** attempt) + random.random()
-                print(f"  [WARN] Graph 500 paginando (tentativa {attempt+1}/4). Esperando {wait:.1f}s...")
+                logger.warning(f"  [WARN] Graph 500 paginando (tentativa {attempt+1}/4). Esperando {wait:.1f}s...")
                 time.sleep(wait)
         else:
             raise RuntimeError("Falhou ao paginar (HTTP 500 recorrente).")
@@ -298,7 +339,7 @@ def load_page_tokens():
     try:
         data = graph_get("me/accounts", token_to_use, fields="id,access_token", limit=200)
     except Exception as e:
-        print(f"  [WARN] Não consegui carregar Page tokens via /me/accounts. Continuando sem cache. Motivo: {e}")
+        logger.warning(f"  [WARN] Não consegui carregar Page tokens via /me/accounts. Continuando sem cache. Motivo: {e}")
         PAGE_TOKEN_CACHE = {}
         return
 
@@ -369,7 +410,7 @@ def get_active_ads_and_creatives():
             try:
                 creative_cache[c_id] = get_creative_by_id(str(c_id))
             except Exception as e:
-                print(f"  [WARN] Não consegui detalhar creative {c_id}: {e}")
+                logger.warning(f"  [WARN] Não consegui detalhar creative {c_id}: {e}")
                 creative_cache[c_id] = c
 
             time.sleep(0.2)
@@ -386,7 +427,7 @@ def get_ads_by_ids(ad_ids):
         try:
             out.append(graph_get(ad_id, ACCESS_TOKEN, fields=fields))
         except Exception as e:
-            print(f"  [WARN] Falha ao buscar ad_id={ad_id}: {e}")
+            logger.warning(f"  [WARN] Falha ao buscar ad_id={ad_id}: {e}")
     return out
 
 
@@ -599,21 +640,30 @@ def main():
         if need:
             extra_ads = get_ads_by_ids(need)
 
-            # detalha creatives com cache
+            # detalha creatives com cache usando BATCH para evitar rate limit
             creative_cache = {}
+            cids_to_fetch = []
             for ad in extra_ads:
-                c = ad.get("creative") or {}
-                cid = c.get("id")
-                if not cid:
-                    continue
-                if cid not in creative_cache:
-                    try:
-                        creative_cache[cid] = get_creative_by_id(str(cid))
-                    except Exception as e:
-                        print(f"  [WARN] Não consegui detalhar creative {cid} (extra): {e}")
-                        creative_cache[cid] = c
-                    time.sleep(0.2)
-                ad["creative"] = creative_cache[cid]
+                cid = (ad.get("creative") or {}).get("id")
+                if cid and cid not in creative_cache:
+                    cids_to_fetch.append(str(cid))
+                    creative_cache[cid] = ad.get("creative") # placeholder
+
+            # Busca em lotes de 50 (limite do Facebook)
+            for i in range(0, len(cids_to_fetch), 50):
+                chunk = cids_to_fetch[i:i+50]
+                batch = [{"method": "GET", "relative_url": f"{cid}?fields=id,name,object_type,image_url,thumbnail_url,video_id,object_story_spec"} for cid in chunk]
+                results = graph_batch_get(batch, ACCESS_TOKEN)
+                for res in results:
+                    if res.get("code") == 200:
+                        body = json.loads(res.get("body", "{}"))
+                        creative_cache[str(body.get("id"))] = body
+                time.sleep(1)
+
+            for ad in extra_ads:
+                cid = str((ad.get("creative") or {}).get("id"))
+                if cid in creative_cache:
+                    ad["creative"] = creative_cache[cid]
 
     all_ads = active_ads + extra_ads
     print(f"Total para processar: {len(all_ads)} anúncios ({len(active_ads)} ativos + {len(extra_ads)} pausados do score).")
