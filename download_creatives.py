@@ -117,23 +117,43 @@ def graph_get(node: str, token: str, fields: str | None = None, **params) -> dic
         q["fields"] = fields
     q.update(params)
 
-    r = session.get(url, params=q, timeout=60)
+    # tenta algumas vezes por rate-limit
+    for attempt in range(8):
+        r = session.get(url, params=q, timeout=60)
 
-    if r.status_code == 500:
-        try:
-            payload = r.json()
-        except Exception:
-            payload = r.text[:300]
-        raise GraphServer500(payload)
+        # Graph internal error
+        if r.status_code == 500:
+            try:
+                payload = r.json()
+            except Exception:
+                payload = r.text[:300]
+            raise GraphServer500(payload)
 
-    if r.status_code >= 400:
-        try:
-            payload = r.json()
-        except Exception:
-            payload = r.text[:300]
-        raise GraphRequestError(r.status_code, node, payload)
+        if r.status_code >= 400:
+            try:
+                payload = r.json()
+            except Exception:
+                payload = r.text[:300]
 
-    return r.json()
+            # rate limit / request limit
+            if isinstance(payload, dict):
+                err = (payload.get("error") or {})
+                code = err.get("code")
+                sub = err.get("error_subcode")
+                msg = err.get("message", "")
+
+                if code == 17 or sub == 2446079 or "User request limit reached" in str(msg):
+                    wait = min(60, (2 ** attempt) + random.random() * 3)
+                    print(f"  [RATE LIMIT] code={code} sub={sub}. Esperando {wait:.1f}s e tentando novamente...")
+                    time.sleep(wait)
+                    continue
+
+            raise GraphRequestError(r.status_code, node, payload)
+
+        return r.json()
+
+    raise RuntimeError("Rate limit persistente: excedeu tentativas no Graph API.")
+
 
 
 def graph_get_paged(node: str, token: str, fields: str, **params):
