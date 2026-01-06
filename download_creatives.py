@@ -329,8 +329,8 @@ def get_active_ads_basic():
         {"field": "effective_status", "operator": "IN", "value": ["ACTIVE"]}
     ])
 
-    fields = "id,name,effective_status,campaign_id,creative{id}"
-    return graph_get_paged(node, ACCESS_TOKEN, fields=fields, limit=50, filtering=filtering)
+    fields = "id,name,effective_status,creative{id}"
+    return graph_get_paged(node, ACCESS_TOKEN, fields=fields, limit=25, filtering=filtering)
 
 
 def get_creative_by_id(creative_id: str) -> dict:
