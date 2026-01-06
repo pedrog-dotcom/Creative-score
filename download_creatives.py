@@ -1,41 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-download_creatives.py
-
-O que este script faz (bem direto):
-- Baixa os criativos (imagem/vídeo) de:
-  1) TODOS os anúncios ATIVOS na conta (independente de campanha)
-  2) TODOS os anúncios que foram pausados pelo seu score (SCORE baixo ou HARD STOP)
-     dentro da campanha definida por META_CAMPAIGN_ID
-
-- Salva os arquivos em 360p e 4fps (para reduzir custo em análises de IA)
-- Gera um catálogo (catalog.csv) com o "mapa" de tudo que foi baixado:
-  ad_id, ad_name, status, caminho do arquivo, etc.
-
-Como configurar (via variáveis de ambiente / GitHub Secrets):
-- META_ACCESS_TOKEN
-- META_AD_ACCOUNT_ID        (ex: act_123...)
-- META_CAMPAIGN_ID          (ex: 120240998569260670)
-
-Opcional:
-- SCORE_CSV_PATH            (default: creative_score_automation.csv)
-- OUT_DIR                   (default: creatives_output)
-- VIDEO_HEIGHT              (default: 360)
-- VIDEO_FPS                 (default: 4)
-- FRAMES_PER_VIDEO          (default: 12)  -> extrai frames para análise visual barata
-"""
 
 import os
-import csv
 import re
+import csv
 import json
 import time
+import random
+import inspect
 import hashlib
-from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
-
 import requests
+from pathlib import Path
+from datetime import datetime, timezone
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -52,23 +28,38 @@ except ImportError:
 
 
 # =========================
-# Config
+# CONFIG / ENV
 # =========================
+API_VERSION = os.getenv("META_GRAPH_VERSION", "v24.0").strip() or "v24.0"
+BASE_URL = f"https://graph.facebook.com/{API_VERSION}"
+
 ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN", "").strip()
+USER_TOKEN = os.getenv("META_USER_TOKEN", "").strip()  # opcional (melhora muito page token)
 AD_ACCOUNT_ID = os.getenv("META_AD_ACCOUNT_ID", "").strip()
 CAMPAIGN_ID = os.getenv("META_CAMPAIGN_ID", "").strip()
 
-SCORE_CSV_PATH = os.getenv("SCORE_CSV_PATH", "creative_score_automation.csv")
 OUT_DIR = Path(os.getenv("OUT_DIR", "creatives_output"))
+SCORE_CSV_PATH = Path(os.getenv("SCORE_CSV_PATH", "creative_score_automation.csv"))
 
 VIDEO_HEIGHT = int(os.getenv("VIDEO_HEIGHT", "360"))
 VIDEO_FPS = int(os.getenv("VIDEO_FPS", "4"))
 FRAMES_PER_VIDEO = int(os.getenv("FRAMES_PER_VIDEO", "12"))
 
-GRAPH_VERSION = os.getenv("META_GRAPH_VERSION", "v20.0")  # ajuste se necessário
+IMAGES_DIR = OUT_DIR / "images"
+VIDEOS_DIR = OUT_DIR / "videos"
+FRAMES_ROOT = OUT_DIR / "frames"
+MEDIA_DIR = OUT_DIR / "media"  # compat com o pipeline anterior
+
+RUN_AT_UTC = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+DEFAULT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/120.0 Safari/537.36"
+}
 
 
-def _require_env():
+def require_env():
     missing = []
     if not ACCESS_TOKEN:
         missing.append("META_ACCESS_TOKEN")
@@ -81,73 +72,114 @@ def _require_env():
 
 
 # =========================
-# HTTP session com retry
+# SESSION + RETRIES
 # =========================
-def make_session() -> requests.Session:
-    s = requests.Session()
+def build_session():
     retry = Retry(
         total=6,
-        backoff_factor=0.6,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET", "POST"],
+        backoff_factor=0.8,
+        status_forcelist=[429, 502, 503, 504],
+        allowed_methods=frozenset(["GET"]),
         raise_on_status=False,
     )
-    adapter = HTTPAdapter(max_retries=retry)
-    s.mount("https://", adapter)
-    s.mount("http://", adapter)
+    s = requests.Session()
+    s.mount("https://", HTTPAdapter(max_retries=retry))
     return s
 
 
-session = make_session()
+session = build_session()
 
 
-def graph_get(node: str, params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    GET no Graph API:
-    https://graph.facebook.com/{version}/{node}?access_token=...&fields=...
-    """
-    url = f"https://graph.facebook.com/{GRAPH_VERSION}/{node}"
-    params = dict(params)
-    params["access_token"] = ACCESS_TOKEN
-    r = session.get(url, params=params, timeout=120)
-    data = r.json()
-    if r.status_code >= 400 or "error" in data:
-        raise RuntimeError(f"Graph error ({r.status_code}): {json.dumps(data, ensure_ascii=False)[:2000]}")
-    return data
+# =========================
+# HELPERS / GRAPH
+# =========================
+def sanitize_filename(name: str) -> str:
+    name = re.sub(r"[^\w\s-]", "", name)
+    return name.strip().replace(" ", "_")[:150]
 
 
-def graph_get_paged(node: str, params: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Faz paginação automática (Graph API retorna 'paging'->'next')
-    """
-    url = f"https://graph.facebook.com/{GRAPH_VERSION}/{node}"
-    params = dict(params)
-    params["access_token"] = ACCESS_TOKEN
+class GraphServer500(Exception):
+    pass
 
-    out: List[Dict[str, Any]] = []
+
+class GraphRequestError(Exception):
+    def __init__(self, status: int, node: str, payload):
+        super().__init__(f"HTTP {status} no node={node} | payload={payload}")
+        self.status = status
+        self.node = node
+        self.payload = payload
+
+
+def graph_get(node: str, token: str, fields: str | None = None, **params) -> dict:
+    url = f"{BASE_URL}/{node.lstrip('/')}"
+    q = {"access_token": token}
+    if fields:
+        q["fields"] = fields
+    q.update(params)
+
+    r = session.get(url, params=q, timeout=60)
+
+    if r.status_code == 500:
+        try:
+            payload = r.json()
+        except Exception:
+            payload = r.text[:300]
+        raise GraphServer500(payload)
+
+    if r.status_code >= 400:
+        try:
+            payload = r.json()
+        except Exception:
+            payload = r.text[:300]
+        raise GraphRequestError(r.status_code, node, payload)
+
+    return r.json()
+
+
+def graph_get_paged(node: str, token: str, fields: str, **params):
+    out = []
+    after = None
+    page = 1
+
     while True:
-        r = session.get(url, params=params, timeout=120)
-        data = r.json()
-        if r.status_code >= 400 or "error" in data:
-            raise RuntimeError(f"Graph error ({r.status_code}): {json.dumps(data, ensure_ascii=False)[:2000]}")
-        out.extend(data.get("data", []) or [])
-        nxt = (data.get("paging") or {}).get("next")
-        if not nxt:
+        p = dict(params)
+        p["limit"] = p.get("limit", 50)
+        if after:
+            p["after"] = after
+
+        for attempt in range(4):
+            try:
+                data = graph_get(node, token, fields=fields, **p)
+                break
+            except GraphServer500:
+                wait = (2 ** attempt) + random.random()
+                print(f"  [WARN] Graph 500 paginando (tentativa {attempt+1}/4). Esperando {wait:.1f}s...")
+                time.sleep(wait)
+        else:
+            raise RuntimeError("Falhou ao paginar (HTTP 500 recorrente).")
+
+        batch = data.get("data", []) or []
+        out.extend(batch)
+
+        cursors = ((data.get("paging") or {}).get("cursors") or {})
+        after = cursors.get("after")
+        if not after:
             break
-        # quando vem "next", a URL já vem completa
-        url = nxt
-        params = {}  # params já estão embutidos em next
+
+        page += 1
+        time.sleep(0.25)
+
     return out
 
 
-# =========================
-# Helpers
-# =========================
-def safe_filename(name: str, max_len: int = 120) -> str:
-    name = name.strip()
-    name = re.sub(r"[^\w\-. ]+", "_", name, flags=re.UNICODE)
-    name = re.sub(r"\s+", " ", name).strip()
-    return name[:max_len] if len(name) > max_len else name
+def download_file(url: str, dest_path: Path, timeout: int = 300) -> None:
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    r = session.get(url, headers=DEFAULT_HEADERS, stream=True, timeout=timeout, allow_redirects=True)
+    r.raise_for_status()
+    with open(dest_path, "wb") as f:
+        for chunk in r.iter_content(chunk_size=1024 * 1024):
+            if chunk:
+                f.write(chunk)
 
 
 def sha256_file(path: Path) -> str:
@@ -158,54 +190,53 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def download_file(url: str, dest: Path) -> None:
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    r = session.get(url, stream=True, timeout=300, allow_redirects=True)
-    r.raise_for_status()
-    with open(dest, "wb") as f:
-        for chunk in r.iter_content(chunk_size=1024 * 1024):
-            if chunk:
-                f.write(chunk)
+def write_videofile_compat(clip, out_path: Path, **kwargs):
+    sig = inspect.signature(clip.write_videofile)
+    filtered = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    return clip.write_videofile(str(out_path), **filtered)
 
 
-def transcode_video(in_path: Path, out_path: Path, height: int, fps: int) -> Tuple[float, int, int]:
-    """
-    Converte para (height) e (fps).
-    Retorna: (duration_sec, width, height)
-    """
+def transcode_video(in_path: Path, out_path: Path, height: int, fps: int):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     clip = VideoFileClip(str(in_path))
 
-    # Redimensiona por altura e mantém proporção
-    clip_resized = clip.resize(height=height)
+    try:
+        clip_resized = clip.resized(height=height)  # moviepy 2.x
+    except AttributeError:
+        clip_resized = clip.resize(height=height)   # moviepy 1.x
 
-    # Ajusta fps
-    clip_resized = clip_resized.set_fps(fps)
+    if hasattr(clip_resized, "with_fps"):
+        clip_final = clip_resized.with_fps(fps)
+    else:
+        clip_final = clip_resized.set_fps(fps)
 
-    # Codec padrão ok pro GitHub Actions
-    clip_resized.write_videofile(
-        str(out_path),
+    write_videofile_compat(
+        clip_final,
+        out_path,
         codec="libx264",
         audio_codec="aac",
         fps=fps,
-        threads=2,
+        temp_audiofile=str(out_path.with_suffix(".m4a")),
+        remove_temp=True,
         logger=None,
-        preset="medium",
-        bitrate="600k",
+        verbose=False,
     )
 
     duration = float(clip.duration or 0.0)
-    w, h = int(clip_resized.w), int(clip_resized.h)
+    w = int(getattr(clip_final, "w", 0) or 0)
+    h = int(getattr(clip_final, "h", 0) or 0)
 
-    clip.close()
-    clip_resized.close()
+    try: clip_final.close()
+    except: pass
+    try: clip_resized.close()
+    except: pass
+    try: clip.close()
+    except: pass
+
     return duration, w, h
 
 
-def extract_frames(video_path: Path, frames_dir: Path, frames_count: int) -> List[Path]:
-    """
-    Extrai N frames igualmente espaçados. Ótimo para análise visual "barata".
-    """
+def extract_frames(video_path: Path, frames_dir: Path, frames_count: int):
     frames_dir.mkdir(parents=True, exist_ok=True)
     clip = VideoFileClip(str(video_path))
     duration = float(clip.duration or 0.0)
@@ -213,21 +244,15 @@ def extract_frames(video_path: Path, frames_dir: Path, frames_count: int) -> Lis
         clip.close()
         return []
 
-    # pontos no tempo (evita 0 exato e evita final exato)
-    times = []
-    for i in range(frames_count):
-        t = (i + 1) / (frames_count + 1) * duration
-        times.append(t)
+    times = [(i + 1) / (frames_count + 1) * duration for i in range(frames_count)]
+    out_paths = []
 
-    out_paths: List[Path] = []
     for idx, t in enumerate(times, start=1):
         frame = clip.get_frame(t)
         out = frames_dir / f"frame_{idx:03d}.jpg"
-        # salvar com pillow (mais leve)
         if Image is not None:
             Image.fromarray(frame).save(out, format="JPEG", quality=70, optimize=True)
         else:
-            # fallback: moviepy (mais pesado)
             from imageio import imwrite
             imwrite(out, frame)
         out_paths.append(out)
@@ -237,121 +262,271 @@ def extract_frames(video_path: Path, frames_dir: Path, frames_count: int) -> Lis
 
 
 # =========================
-# Meta: coletar ads e creatives
+# PAGE TOKEN CACHE (opcional)
 # =========================
-def get_active_ads_in_account() -> List[Dict[str, Any]]:
-    fields = "id,name,effective_status,adset_id,campaign_id,creative{id}"
-    node = f"{AD_ACCOUNT_ID}/ads"
-    params = {
-        "fields": fields,
-        "effective_status": json.dumps(["ACTIVE"]),
-        "limit": 200,
-    }
-    return graph_get_paged(node, params)
+PAGE_TOKEN_CACHE = None
 
 
-def get_ads_by_ids(ad_ids: List[str]) -> List[Dict[str, Any]]:
-    """
-    Busca detalhes de anúncios específicos (útil para pegar paused ads).
-    """
+def load_page_tokens():
+    global PAGE_TOKEN_CACHE
+    if PAGE_TOKEN_CACHE is not None:
+        return
+
+    PAGE_TOKEN_CACHE = {}
+    token_to_use = USER_TOKEN if USER_TOKEN else ACCESS_TOKEN
+
+    try:
+        data = graph_get("me/accounts", token_to_use, fields="id,access_token", limit=200)
+    except Exception as e:
+        print(f"  [WARN] Não consegui carregar Page tokens via /me/accounts. Continuando sem cache. Motivo: {e}")
+        PAGE_TOKEN_CACHE = {}
+        return
+
+    for p in data.get("data", []) or []:
+        pid = p.get("id")
+        ptok = p.get("access_token")
+        if pid and ptok:
+            PAGE_TOKEN_CACHE[str(pid)] = ptok
+
+
+def token_for_post_id(post_id: str) -> str:
+    if "_" in str(post_id):
+        page_id = str(post_id).split("_", 1)[0]
+        load_page_tokens()
+        if PAGE_TOKEN_CACHE and page_id in PAGE_TOKEN_CACHE:
+            return PAGE_TOKEN_CACHE[page_id]
+    return ACCESS_TOKEN
+
+
+# =========================
+# ADS + CREATIVES
+# =========================
+def get_active_ads_basic():
+    account_id = AD_ACCOUNT_ID if AD_ACCOUNT_ID.startswith("act_") else f"act_{AD_ACCOUNT_ID}"
+    node = f"{account_id}/ads"
+
+    filtering = json.dumps([
+        {"field": "effective_status", "operator": "IN", "value": ["ACTIVE"]}
+    ])
+
+    fields = "id,name,effective_status,campaign_id,creative{id}"
+    return graph_get_paged(node, ACCESS_TOKEN, fields=fields, limit=50, filtering=filtering)
+
+
+def get_creative_by_id(creative_id: str) -> dict:
+    fields_full = (
+        "id,name,object_type,"
+        "image_url,thumbnail_url,video_id,"
+        "effective_instagram_media_id,instagram_permalink_url,"
+        "object_story_id,object_id,effective_object_story_id,"
+        "object_story_spec,asset_feed_spec"
+    )
+
+    fields_light = (
+        "id,name,object_type,"
+        "image_url,thumbnail_url,video_id,"
+        "effective_instagram_media_id,instagram_permalink_url,"
+        "object_story_id,object_id,effective_object_story_id"
+    )
+
+    try:
+        return graph_get(creative_id, ACCESS_TOKEN, fields=fields_full)
+    except GraphServer500:
+        return graph_get(creative_id, ACCESS_TOKEN, fields=fields_light)
+
+
+def get_active_ads_and_creatives():
+    ads = get_active_ads_basic()
+    creative_cache = {}
+
+    for ad in ads:
+        c = ad.get("creative") or {}
+        c_id = c.get("id")
+        if not c_id:
+            continue
+
+        if c_id not in creative_cache:
+            try:
+                creative_cache[c_id] = get_creative_by_id(str(c_id))
+            except Exception as e:
+                print(f"  [WARN] Não consegui detalhar creative {c_id}: {e}")
+                creative_cache[c_id] = c
+
+            time.sleep(0.2)
+
+        ad["creative"] = creative_cache[c_id]
+
+    return ads
+
+
+def get_ads_by_ids(ad_ids):
     out = []
+    fields = "id,name,effective_status,campaign_id,creative{id}"
     for ad_id in ad_ids:
-        data = graph_get(ad_id, {"fields": "id,name,effective_status,campaign_id,creative{id}"})
-        out.append(data)
+        try:
+            out.append(graph_get(ad_id, ACCESS_TOKEN, fields=fields))
+        except Exception as e:
+            print(f"  [WARN] Falha ao buscar ad_id={ad_id}: {e}")
     return out
 
 
-def get_creative(creative_id: str) -> Dict[str, Any]:
-    fields = (
-        "id,name,object_type,"
-        "image_url,thumbnail_url,video_id,"
-        "object_story_spec,asset_feed_spec"
-    )
-    return graph_get(creative_id, {"fields": fields})
+# =========================
+# VIDEO RESOLUTION (seu método)
+# =========================
+def _safe_list(x):
+    return x if isinstance(x, list) else []
 
 
-def get_video_source_url(video_id: str) -> Optional[str]:
-    """
-    Para vídeo: /{video_id}?fields=source
-    """
-    try:
-        data = graph_get(video_id, {"fields": "source"})
-        return data.get("source")
-    except Exception:
-        return None
+def extract_video_ids(creative: dict):
+    ids = []
+    if not creative:
+        return ids
 
-
-def find_media_from_creative(creative: Dict[str, Any]) -> Tuple[str, Optional[str], Optional[str]]:
-    """
-    Retorna (media_type, url, video_id)
-    - media_type: "video" ou "image" ou "unknown"
-    - url: url de download (quando disponível)
-    """
-    # 1) campos diretos
     if creative.get("video_id"):
-        vid = str(creative["video_id"])
-        src = get_video_source_url(vid)
-        return "video", src, vid
+        ids.append(str(creative["video_id"]))
 
-    if creative.get("image_url"):
-        return "image", creative.get("image_url"), None
+    spec = creative.get("object_story_spec") or {}
+    vdid = (spec.get("video_data") or {}).get("video_id")
+    if vdid:
+        ids.append(str(vdid))
 
-    # 2) object_story_spec
-    oss = creative.get("object_story_spec") or {}
-    if isinstance(oss, dict):
-        video_data = oss.get("video_data") or {}
-        if isinstance(video_data, dict) and video_data.get("video_id"):
-            vid = str(video_data["video_id"])
-            src = get_video_source_url(vid)
-            return "video", src, vid
-        if isinstance(video_data, dict) and video_data.get("image_url"):
-            return "image", video_data.get("image_url"), None
+    link_data = spec.get("link_data") or {}
+    for att in _safe_list(link_data.get("child_attachments")):
+        vid = att.get("video_id") or ((att.get("video_data") or {}).get("video_id"))
+        if vid:
+            ids.append(str(vid))
 
-        link_data = oss.get("link_data") or {}
-        if isinstance(link_data, dict):
-            # imagem
-            if link_data.get("image_url"):
-                return "image", link_data.get("image_url"), None
-            # vídeo raro (link_data->video_id)
-            if link_data.get("video_id"):
-                vid = str(link_data["video_id"])
-                src = get_video_source_url(vid)
-                return "video", src, vid
-
-    # 3) asset_feed_spec (ex: dynamic)
     afs = creative.get("asset_feed_spec") or {}
-    if isinstance(afs, dict):
-        videos = afs.get("videos") or []
-        if videos and isinstance(videos, list) and isinstance(videos[0], dict):
-            if videos[0].get("video_id"):
-                vid = str(videos[0]["video_id"])
-                src = get_video_source_url(vid)
-                return "video", src, vid
-        images = afs.get("images") or []
-        if images and isinstance(images, list) and isinstance(images[0], dict):
-            # às vezes vem url direto; às vezes vem hash
-            if images[0].get("url"):
-                return "image", images[0].get("url"), None
+    for v in _safe_list(afs.get("videos")):
+        vid = v.get("video_id")
+        if vid:
+            ids.append(str(vid))
 
-    return "unknown", None, None
+    out, seen = [], set()
+    for v in ids:
+        if v and v not in seen:
+            seen.add(v)
+            out.append(v)
+    return out
+
+
+def get_video_source_from_video_id(video_id: str, tokens_to_try):
+    for tok in tokens_to_try:
+        try:
+            data = graph_get(video_id, tok, fields="source")
+            src = data.get("source")
+            if src:
+                return src
+        except Exception:
+            continue
+    return None
+
+
+def get_video_from_ig_media(ig_media_id: str, tokens_to_try):
+    for tok in tokens_to_try:
+        try:
+            data = graph_get(ig_media_id, tok, fields="media_type,media_url,thumbnail_url")
+            if data.get("media_type") in ("VIDEO", "REELS"):
+                return data.get("media_url"), data.get("thumbnail_url")
+        except Exception:
+            continue
+    return None, None
+
+
+def get_video_url_from_post(post_id: str):
+    tok = token_for_post_id(post_id)
+    fields = (
+        "attachments{media_type,media{source,image},subattachments{media_type,media{source,image}}},"
+        "full_picture"
+    )
+    try:
+        data = graph_get(post_id, tok, fields=fields)
+        full_picture = data.get("full_picture")
+
+        attachments = ((data.get("attachments") or {}).get("data")) or []
+        queue = list(attachments)
+
+        while queue:
+            item = queue.pop(0)
+            media = item.get("media") or {}
+
+            if media.get("source"):
+                thumb = (media.get("image") or {}).get("src") or full_picture
+                return media["source"], thumb
+
+            sub = ((item.get("subattachments") or {}).get("data")) or []
+            queue.extend(sub)
+
+        return None, full_picture
+    except Exception:
+        return None, None
+
+
+def resolve_media_for_ad(ad: dict):
+    creative = ad.get("creative") or {}
+    obj_type = str(creative.get("object_type", "")).upper()
+
+    video_ids = extract_video_ids(creative)
+    ig_media_id = creative.get("effective_instagram_media_id")
+    post_id = creative.get("effective_object_story_id") or creative.get("object_id") or creative.get("object_story_id")
+
+    is_video_creative = bool(video_ids) or bool(ig_media_id) or (obj_type == "VIDEO")
+
+    tokens_to_try = [ACCESS_TOKEN]
+    if post_id and "_" in str(post_id):
+        load_page_tokens()
+        page_id = str(post_id).split("_", 1)[0]
+        if PAGE_TOKEN_CACHE and page_id in PAGE_TOKEN_CACHE:
+            if PAGE_TOKEN_CACHE[page_id] not in tokens_to_try:
+                tokens_to_try.append(PAGE_TOKEN_CACHE[page_id])
+
+    v_url = None
+    img_url = None
+    v_id = None
+
+    # 1) video_id -> source
+    for vid in video_ids:
+        v_url = get_video_source_from_video_id(vid, tokens_to_try)
+        if v_url:
+            v_id = vid
+            break
+
+    # 2) IG media
+    if not v_url and ig_media_id:
+        v_url, img_url = get_video_from_ig_media(str(ig_media_id), tokens_to_try)
+
+    # 3) post attachments
+    if not v_url and post_id:
+        v_url, img_url = get_video_url_from_post(str(post_id))
+
+    # 4) fallback thumb/imagem
+    if not img_url:
+        img_url = creative.get("image_url") or creative.get("thumbnail_url")
+    if not img_url:
+        spec = creative.get("object_story_spec") or {}
+        img_url = (spec.get("link_data") or {}).get("image_url")
+    if not img_url:
+        spec = creative.get("object_story_spec") or {}
+        attachments = (spec.get("link_data") or {}).get("child_attachments") or []
+        if attachments:
+            img_url = attachments[0].get("image_url")
+
+    if v_url and is_video_creative:
+        return "video", v_url, img_url, v_id
+    if img_url:
+        return "image", img_url, None, None
+    return "unknown", None, None, None
 
 
 # =========================
-# Score CSV: quais foram pausados
+# SCORE CSV -> paused ads
 # =========================
-def load_paused_ads_from_score_csv(score_csv: Path) -> Dict[str, Dict[str, Any]]:
-    """
-    Lê creative_score_automation.csv e retorna:
-    {ad_id: {pause_reason, performance_score, spend_std, spend_share, cac, ...}}
-    Apenas os que foram pausados por:
-    - HARD_STOP (seu script usa reason=HARD_STOP ou parecido)
-    - SCORE_LT_3 (ou SCORE_LT_*)
-    """
+def load_paused_ads_from_score_csv(score_csv: Path):
     if not score_csv.exists():
-        print(f"⚠️ Score CSV não encontrado: {score_csv}. Vou baixar apenas os ATIVOS da conta.")
+        print(f"⚠️ Score CSV não encontrado: {score_csv}. Vou baixar apenas ATIVOS.")
         return {}
 
-    paused: Dict[str, Dict[str, Any]] = {}
+    paused = {}
     with open(score_csv, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -359,11 +534,7 @@ def load_paused_ads_from_score_csv(score_csv: Path) -> Dict[str, Dict[str, Any]]
             if not ad_id:
                 continue
 
-            # seu script imprime reason=... no log, mas no CSV pode ter coluna "pause_reason" ou similar.
-            # vamos tentar achar alguns nomes comuns:
             reason = (row.get("pause_reason") or row.get("paused_reason") or row.get("reason") or "").strip()
-
-            # fallback: se não tem coluna, não conseguimos filtrar com certeza.
             if not reason:
                 continue
 
@@ -371,190 +542,191 @@ def load_paused_ads_from_score_csv(score_csv: Path) -> Dict[str, Dict[str, Any]]
             if ("HARD" in r_up) or ("SCORE_LT" in r_up) or ("SCORE" in r_up and "LT" in r_up):
                 paused[ad_id] = {
                     "pause_reason": reason,
-                    "performance_score": row.get("performance_score"),
-                    "spend_std": row.get("spend_std") or row.get("spend"),
-                    "cac": row.get("cac") or row.get("cpp_inc") or row.get("cost_per_purchase"),
-                    "ad_name_std": row.get("ad_name_std") or row.get("ad_name") or "",
+                    "performance_score": row.get("performance_score", ""),
+                    "spend_std": row.get("spend_std") or row.get("spend") or "",
+                    "cac": row.get("cac") or row.get("cost_per_purchase") or "",
                 }
+
     return paused
 
 
 # =========================
-# Main
+# MAIN
 # =========================
 def main():
-    _require_env()
+    require_env()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    media_dir = OUT_DIR / "media"
-    frames_root = OUT_DIR / "frames"
-    media_dir.mkdir(parents=True, exist_ok=True)
-    frames_root.mkdir(parents=True, exist_ok=True)
+    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
+    FRAMES_ROOT.mkdir(parents=True, exist_ok=True)
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
     print("=== Download de criativos (ativos da conta + pausados pelo score da campanha) ===")
 
-    paused_map = load_paused_ads_from_score_csv(Path(SCORE_CSV_PATH))
+    paused_map = load_paused_ads_from_score_csv(SCORE_CSV_PATH)
     paused_ids = list(paused_map.keys())
 
-    # 1) ativos na conta
-    active_ads = get_active_ads_in_account()
-    active_ids = [a["id"] for a in active_ads if a.get("id")]
+    # 1) ativos na conta (já vem com creative detalhado)
+    active_ads = get_active_ads_and_creatives()
+    active_ids = [str(a.get("id")) for a in active_ads if a.get("id")]
 
-    # 2) pausados pelo score (podem estar PAUSED agora)
+    # 2) pausados do score (puxa ads e detalha creative)
     extra_ads = []
     if paused_ids:
         print(f"📌 Encontrados {len(paused_ids)} anúncios pausados no score CSV para baixar também.")
-        # evita duplicar ids já ativos
         need = [i for i in paused_ids if i not in set(active_ids)]
         if need:
             extra_ads = get_ads_by_ids(need)
 
-    # junta
-    all_ads = active_ads + extra_ads
+            # detalha creatives com cache
+            creative_cache = {}
+            for ad in extra_ads:
+                c = ad.get("creative") or {}
+                cid = c.get("id")
+                if not cid:
+                    continue
+                if cid not in creative_cache:
+                    try:
+                        creative_cache[cid] = get_creative_by_id(str(cid))
+                    except Exception as e:
+                        print(f"  [WARN] Não consegui detalhar creative {cid} (extra): {e}")
+                        creative_cache[cid] = c
+                    time.sleep(0.2)
+                ad["creative"] = creative_cache[cid]
 
+    all_ads = active_ads + extra_ads
     print(f"Total para processar: {len(all_ads)} anúncios ({len(active_ads)} ativos + {len(extra_ads)} pausados do score).")
 
-    catalog_rows: List[Dict[str, Any]] = []
-    for idx, ad in enumerate(all_ads, start=1):
-        ad_id = str(ad.get("id"))
-        ad_name = str(ad.get("name") or "").strip()
-        eff_status = str(ad.get("effective_status") or "")
+    catalog_rows = []
+
+    for i, ad in enumerate(all_ads, 1):
+        ad_id = str(ad.get("id") or "").strip()
+        ad_name = str(ad.get("name") or "sem_nome").strip()
+        status = str(ad.get("effective_status") or "")
         campaign_id = str(ad.get("campaign_id") or "")
-        creative = (ad.get("creative") or {})
-        creative_id = str(creative.get("id") or "")
 
-        if not creative_id:
-            print(f"[{idx}/{len(all_ads)}] ⚠️ Sem creative_id: ad_id={ad_id}")
-            continue
-
-        # pega infos do score (se existir)
-        score_info = paused_map.get(ad_id, {})
-        pause_reason = score_info.get("pause_reason", "")
-
-        # filtra: queremos baixar todos os ATIVOS da conta, e também os PAUSADOS do score,
-        # mas só se forem da campanha alvo.
-        is_active_account = (eff_status.upper() == "ACTIVE")
+        pause_reason = (paused_map.get(ad_id) or {}).get("pause_reason", "")
+        is_active = (status.upper() == "ACTIVE")
         is_paused_by_score = bool(pause_reason)
 
-        if (not is_active_account) and (not is_paused_by_score):
+        # regras: baixa ativos, e pausados do score SOMENTE da campanha alvo
+        if (not is_active) and (not is_paused_by_score):
             continue
-
         if is_paused_by_score and campaign_id and campaign_id != CAMPAIGN_ID:
-            # pausado por score mas de outra campanha (por segurança)
             continue
 
-        print(f"[{idx}/{len(all_ads)}] ad_id={ad_id} | {safe_filename(ad_name)} | status={eff_status} | creative_id={creative_id}")
-
-        # creative detalhado
-        try:
-            cr = get_creative(creative_id)
-        except Exception as e:
-            print(f"   ❌ Falha ao buscar creative {creative_id}: {e}")
+        creative = ad.get("creative") or {}
+        creative_id = str(creative.get("id") or "").strip()
+        if not creative_id:
+            print(f"[{i}/{len(all_ads)}] ⚠️ Sem creative_id: ad_id={ad_id}")
             continue
 
-        media_type, url, video_id = find_media_from_creative(cr)
-        if not url:
-            print(f"   ⚠️ Não encontrei URL de mídia (type={media_type}). Pulando.")
+        print(f"[{i}/{len(all_ads)}] ad_id={ad_id} | {ad_name} | status={status} | creative_id={creative_id}")
+
+        media_type, media_url, thumb_url, video_id = resolve_media_for_ad(ad)
+        if not media_url:
+            print(f"  ⚠️ Não encontrei URL de mídia (type={media_type}). Pulando.")
             continue
 
-        # paths
-        base_name = safe_filename(f"{ad_id}_{ad_name}") or ad_id
-        raw_path = media_dir / f"{base_name}_raw"
-        out_path = media_dir / f"{base_name}"
+        base = sanitize_filename(ad_name) or ad_id
+        base = f"{base}_{creative_id}"
 
-        # download + process
-        local_media_path = None
-        duration_sec = None
-        w = None
-        h = None
-        frames_paths: List[Path] = []
+        duration_sec = ""
+        w = ""
+        h = ""
+        frames_dir = ""
+        frames_count = 0
 
         try:
             if media_type == "video":
-                raw_mp4 = raw_path.with_suffix(".mp4")
-                download_file(url, raw_mp4)
+                tmp = MEDIA_DIR / f"{base}_raw.mp4"
+                out = VIDEOS_DIR / f"{base}.mp4"
+                download_file(media_url, tmp, timeout=600)
+                d, ww, hh = transcode_video(tmp, out, height=VIDEO_HEIGHT, fps=VIDEO_FPS)
+                duration_sec = f"{d:.2f}"
+                w, h = str(ww), str(hh)
 
-                out_mp4 = out_path.with_suffix(".mp4")
-                duration_sec, w, h = transcode_video(raw_mp4, out_mp4, height=VIDEO_HEIGHT, fps=VIDEO_FPS)
-                local_media_path = out_mp4
+                frames_path = FRAMES_ROOT / ad_id
+                frames = extract_frames(out, frames_path, FRAMES_PER_VIDEO)
+                frames_dir = str(frames_path.as_posix())
+                frames_count = len(frames)
 
-                # frames
-                frames_dir = frames_root / ad_id
-                frames_paths = extract_frames(out_mp4, frames_dir, FRAMES_PER_VIDEO)
+                local_path = out
 
             elif media_type == "image":
-                raw_img = raw_path.with_suffix(".jpg")
-                download_file(url, raw_img)
-
-                # otimiza: re-salva em jpeg mais leve
-                out_img = out_path.with_suffix(".jpg")
-                out_img.parent.mkdir(parents=True, exist_ok=True)
+                tmp = MEDIA_DIR / f"{base}_raw.jpg"
+                out = IMAGES_DIR / f"{base}.jpg"
+                download_file(media_url, tmp, timeout=180)
                 if Image is not None:
-                    im = Image.open(raw_img).convert("RGB")
-                    im.save(out_img, format="JPEG", quality=70, optimize=True)
+                    im = Image.open(tmp).convert("RGB")
+                    im.save(out, format="JPEG", quality=70, optimize=True)
                 else:
-                    # sem pillow, mantém original
-                    out_img = raw_img
-                local_media_path = out_img
+                    out = tmp
+                local_path = out
+
             else:
-                print(f"   ⚠️ Tipo desconhecido: {media_type}. Pulando.")
+                print(f"  ⚠️ Tipo desconhecido: {media_type}. Pulando.")
                 continue
+
         except Exception as e:
-            print(f"   ❌ Falha download/process: {e}")
+            print(f"  ❌ Falha download/process: {e}")
+            # salva thumb diagnóstico quando vídeo falha
+            if media_type == "video" and thumb_url:
+                try:
+                    diag = IMAGES_DIR / f"{base}_thumb.jpg"
+                    download_file(thumb_url, diag, timeout=120)
+                    print("  ℹ️ Thumb salva para diagnóstico.")
+                except Exception:
+                    pass
             continue
 
-        # hash (dedupe)
-        file_hash = sha256_file(local_media_path) if local_media_path and local_media_path.exists() else ""
+        file_hash = sha256_file(local_path) if local_path.exists() else ""
+
+        score_info = paused_map.get(ad_id) or {}
 
         catalog_rows.append({
+            "run_at_utc": RUN_AT_UTC,
             "ad_id": ad_id,
             "ad_name": ad_name,
-            "effective_status": eff_status,
+            "effective_status": status,
             "campaign_id": campaign_id,
             "creative_id": creative_id,
             "media_type": media_type,
             "video_id": video_id or "",
-            "local_path": str(local_media_path.as_posix()) if local_media_path else "",
+            "local_path": str(local_path.as_posix()),
             "sha256": file_hash,
-            "duration_sec": f"{duration_sec:.2f}" if duration_sec is not None else "",
-            "width": w or "",
-            "height": h or (VIDEO_HEIGHT if media_type == "video" else ""),
-            "fps": VIDEO_FPS if media_type == "video" else "",
-            "frames_dir": str((frames_root / ad_id).as_posix()) if frames_paths else "",
-            "frames_count": len(frames_paths),
-            "pause_reason": pause_reason,
+            "duration_sec": duration_sec,
+            "width": w,
+            "height": h if h else (str(VIDEO_HEIGHT) if media_type == "video" else ""),
+            "fps": str(VIDEO_FPS) if media_type == "video" else "",
+            "frames_dir": frames_dir,
+            "frames_count": frames_count,
+            "pause_reason": score_info.get("pause_reason", ""),
             "performance_score": score_info.get("performance_score", ""),
             "spend_std": score_info.get("spend_std", ""),
             "cac": score_info.get("cac", ""),
-            "is_active_account": int(is_active_account),
+            "is_active_account": int(is_active),
             "is_paused_by_score": int(is_paused_by_score),
         })
 
-        time.sleep(0.15)  # evita martelar API
+        time.sleep(0.15)
 
-    # salvar catálogo
-    # Sempre gera o catálogo, mesmo vazio.
-    # Isso evita quebrar a etapa seguinte (AI), que depende da existência do arquivo.
+    # sempre cria catalog.csv (mesmo vazio)
     catalog_path = OUT_DIR / "catalog.csv"
     default_fields = [
-        "ad_id",
-        "ad_name",
-        "ad_name_std",
-        "effective_status",
-        "campaign_id",
-        "adset_id",
-        "creative_id",
-        "media_type",
-        "local_path",
-        "frames_dir",
-        "source",
+        "run_at_utc","ad_id","ad_name","effective_status","campaign_id","creative_id",
+        "media_type","video_id","local_path","sha256","duration_sec","width","height","fps",
+        "frames_dir","frames_count","pause_reason","performance_score","spend_std","cac",
+        "is_active_account","is_paused_by_score"
     ]
+
     fieldnames = list(catalog_rows[0].keys()) if catalog_rows else default_fields
     with open(catalog_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
+        wri = csv.DictWriter(f, fieldnames=fieldnames)
+        wri.writeheader()
         if catalog_rows:
-            writer.writerows(catalog_rows)
+            wri.writerows(catalog_rows)
 
     print(f"✅ Catálogo gerado: {catalog_path} ({len(catalog_rows)} itens)")
     print("✅ Pronto.")
