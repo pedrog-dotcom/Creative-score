@@ -21,11 +21,23 @@ import json
 import math
 import hashlib
 import re
+import logging
 from pathlib import Path
 from datetime import datetime, timezone
 
 import pandas as pd
 import requests
+
+# Configuração de Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("ai_analysis.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # ---------------------------
 # CONFIG
