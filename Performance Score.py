@@ -1,9 +1,22 @@
 import math
+import logging
+import os
+import json
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import pandas as pd
 from dotenv import load_dotenv
-import os
+
+# Configuração de Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("performance_score.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -122,7 +135,7 @@ def fetch_insights_by_ad(campaign_id: str, suffix_label: str, attribution_window
     try:
         insights = account.get_insights(fields=fields, params=params)
     except Exception as e:
-        print(f"Erro ao buscar insights ({suffix_label}): {e}")
+        logger.error(f"Erro ao buscar insights ({suffix_label}): {e}")
         return pd.DataFrame()
 
     for r in insights:
@@ -153,22 +166,45 @@ def fetch_insights_by_ad(campaign_id: str, suffix_label: str, attribution_window
 # 2) METADADOS (STATUS/DATA)
 # ==============================================================================
 def fetch_ad_metadata(ad_ids: list) -> pd.DataFrame:
-    from facebook_business.api import FacebookAdsApi
-    from facebook_business.adobjects.ad import Ad
-    FacebookAdsApi.init(access_token=ACCESS_TOKEN)
-
+    """
+    Busca metadados de anúncios usando Batch API para evitar Rate Limit.
+    """
+    import requests
+    import json
+    
+    API_VERSION = os.getenv("META_GRAPH_VERSION", "v24.0")
+    url = f"https://graph.facebook.com/{API_VERSION}"
+    
     meta_rows = []
-    for ad_id in ad_ids:
+    # Processa em lotes de 50
+    for i in range(0, len(ad_ids), 50):
+        chunk = ad_ids[i:i+50]
+        batch = [
+            {"method": "GET", "relative_url": f"{ad_id}?fields=id,effective_status,created_time"}
+            for ad_id in chunk
+        ]
+        
+        payload = {
+            "access_token": ACCESS_TOKEN,
+            "batch": json.dumps(batch)
+        }
+        
         try:
-            ad = Ad(ad_id)
-            data = ad.api_get(fields=["id", "effective_status", "created_time"])
-            meta_rows.append({
-                "ad_id": str(data.get("id")),
-                "effective_status": data.get("effective_status"),
-                "created_time": data.get("created_time"),
-            })
-        except Exception:
-            continue
+            r = requests.post(url, data=payload, timeout=60)
+            r.raise_for_status()
+            results = r.json()
+            
+            for res in results:
+                if res.get("code") == 200:
+                    data = json.loads(res.get("body", "{}"))
+                    meta_rows.append({
+                        "ad_id": str(data.get("id")),
+                        "effective_status": data.get("effective_status"),
+                        "created_time": data.get("created_time"),
+                    })
+        except Exception as e:
+            print(f"Erro no batch metadata: {e}")
+            
     dfm = pd.DataFrame(meta_rows)
     if dfm.empty:
         return dfm
@@ -260,7 +296,7 @@ def compute_score_with_correlation_weights(df: pd.DataFrame) -> pd.DataFrame:
     kpis = ["ctr", "connect_rate", "bounce_rate", "cost_per_checkout", "cac"]
     # Se não tiver base suficiente, fallback (bem conservador)
     if len(base) < 5:
-        print("⚠️ Base insuficiente para correlação (poucas compras em 1d click). Usando fallback de pesos.")
+        logger.warning("⚠️ Base insuficiente para correlação (poucas compras em 1d click). Usando fallback de pesos.")
         weights = {
             "ctr": 1.5,
             "connect_rate": 1.5,
