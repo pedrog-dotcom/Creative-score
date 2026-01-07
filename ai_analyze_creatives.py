@@ -229,7 +229,7 @@ def build_prompt_structured(context: dict) -> str:
 
     return f"""
 Você é um(a) especialista em criativos de performance (Meta Ads) para e-commerce. 
-Analise o criativo e explique POR QUE ele performou bem ou mal, com base em sinais visuais e na performance.
+Analise o criativo e explique seu potencial de performance ou o motivo de sua performance atual, com base em sinais visuais e métricas.
 
 IMPORTANTE:
 - Responda SOMENTE com um JSON válido (nada de texto fora do JSON).
@@ -254,7 +254,7 @@ PERFORMANCE (últimos 21 dias):
 
 TAREFA:
 1) Diagnóstico visual: o que ajuda / o que atrapalha (hook, clareza, oferta, prova, ritmo, legibilidade, CTA).
-2) Por que este criativo virou TOP ou PAUSADO (conecte o diagnóstico com métricas).
+2) Diagnóstico de Performance: Por que este criativo é TOP, PAUSADO ou por que ainda está ATIVO (conecte o diagnóstico com métricas).
 3) Sugestões: 3 melhorias e 3 testes rápidos (A/B) para próxima variação.
 4) Gere tags estruturadas (0-10) para formar um dataset e permitir previsões no futuro.
 
@@ -402,6 +402,7 @@ def main():
     # Para resumo
     paused_rows = []
     top_rows = []
+    active_rows = []
 
     # métricas globais p/ CPA vs média
     avg_cpa = None
@@ -544,8 +545,10 @@ def main():
 
             if label in ("PAUSED_LOW_SCORE", "PAUSED_HARD_STOP"):
                 paused_rows.append(result)
-            if label == "TOP_PERFORMER":
+            elif label == "TOP_PERFORMER":
                 top_rows.append(result)
+            else:
+                active_rows.append(result)
 
         except Exception as e:
             failures += 1
@@ -599,6 +602,15 @@ def main():
             lines.append(line_for(r))
     else:
         lines.append("Nenhum (você pode marcar is_top5 no score para habilitar).")
+    lines.append("")
+
+    lines.append("Ativos (ACTIVE) - com análise:")
+    lines.append("-----------------------------------------------------------")
+    if active_rows:
+        for r in active_rows[:50]:
+            lines.append(line_for(r))
+    else:
+        lines.append("Nenhum.")
     lines.append("")
 
     with open(SUMMARY_PATH, "w", encoding="utf-8") as f:
