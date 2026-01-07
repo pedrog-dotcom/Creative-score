@@ -1,9 +1,9 @@
 IA - Resumo da Execução
 ======================
-run_at (UTC): 2026-01-06T17:52:10Z
+run_at (UTC): 2026-01-07T16:45:53Z
 analisados_novos: 0
 reutilizados_cache: 0
-falhas: 45
+falhas: 44
 
 Pausados (LOW_SCORE ou HARD_STOP) - com análise:
 -----------------------------------------------
@@ -12,3 +12,7 @@ Nenhum.
 Top performers (marcados como TOP_PERFORMER) - com análise:
 -----------------------------------------------------------
 Nenhum (você pode marcar is_top5 no score para habilitar).
+
+Ativos (ACTIVE) - com análise:
+-----------------------------------------------------------
+Nenhum.
