@@ -1,10 +1,10 @@
 Meta Score — Resumo da Execução
 ============================
-Data (UTC): 2026-01-07T16-33-04Z
-Run: https://github.com/pedrog-dotcom/Creative-score/actions/runs/20788598292
+Data (UTC): 2026-01-07T18-15-05Z
+Run: https://github.com/pedrog-dotcom/Creative-score/actions/runs/20791749756
 
-CPA médio (base: anúncios com purchase 1d): R$ 700,85
-Total investido na janela (campanha): R$ 395.403,52
+CPA médio (base: anúncios com purchase 1d): R$ 700,58
+Total investido na janela (campanha): R$ 397.405,16
 
 Pausados por má performance (score < 3.0)
 -----------------------------------------
@@ -14,8 +14,8 @@ Top 5 melhores criativos (por score)
 ------------------------------------
 Anúncio | Invest | Share | CPA(1d) | vs média | Score
 ------ | ------ | ----- | ------- | -------- | -----
-WL348_ReactCanetasClandestinas_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 1.018,92 | 0.26% | R$ 203,78 | 0.29x | 7.65
-WL288_PAMFRISONDEZ1_VAR5_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 15.500,24 | 3.92% | R$ 322,92 | 0.46x | 7.05
-WL349_ReactCanetasClandestinas_VAR3_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 925,76 | 0.23% | R$ 308,59 | 0.44x | 7.01
-WL231_AnteseDepois55kg_VAR4_November_BR_IMG_FB_Normal_Customer_NoActor_In-house_Results_NA_Urgency_BeforeAfter_Efficacy_ImprovedQualityOfLife_UGC-Influencer | R$ 4.971,50 | 1.26% | R$ 310,72 | 0.44x | 6.84
-WL284_PAMFRISONDEZ1_VAR1_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 1.481,30 | 0.37% | R$ 296,26 | 0.42x | 6.60
+WL348_ReactCanetasClandestinas_VAR2_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 1.025,57 | 0.26% | R$ 205,11 | 0.29x | 7.73
+WL231_AnteseDepois55kg_VAR4_November_BR_IMG_FB_Normal_Customer_NoActor_In-house_Results_NA_Urgency_BeforeAfter_Efficacy_ImprovedQualityOfLife_UGC-Influencer | R$ 4.973,67 | 1.25% | R$ 292,57 | 0.42x | 7.08
+WL288_PAMFRISONDEZ1_VAR5_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 15.590,81 | 3.92% | R$ 324,81 | 0.46x | 6.96
+WL349_ReactCanetasClandestinas_VAR3_December_BR_VID_FB_PartnershipAd_ContentCreator_BiaRelva_CreatorMade_Informative_NA_Informative_Medication_Credibility_ImprovedHealth_UGC-Influencer | R$ 933,88 | 0.23% | R$ 311,29 | 0.44x | 6.96
+WL284_PAMFRISONDEZ1_VAR1_NA_BR_VID_FB_Normal_ContentCreator_PAMFRISONDEZ_CreatorMade_Informative_NA_Informative_NA_NA_ImprovedHealth_UGC-Influencer | R$ 1.490,40 | 0.38% | R$ 298,08 | 0.43x | 6.59

@@ -1,9 +1,9 @@
 IA - Resumo da Execução
 ======================
-run_at (UTC): 2026-01-07T16:45:53Z
+run_at (UTC): 2026-01-07T18:27:29Z
 analisados_novos: 0
 reutilizados_cache: 0
-falhas: 44
+falhas: 47
 
 Pausados (LOW_SCORE ou HARD_STOP) - com análise:
 -----------------------------------------------
