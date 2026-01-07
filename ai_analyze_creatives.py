@@ -250,7 +250,17 @@ Responda SOMENTE com um JSON válido no seguinte formato:
 
 def call_openai_api(prompt: str, frame_paths: List[str]) -> Dict:
     """Chama a API da OpenAI com o prompt e imagens."""
-    url = AI_ENDPOINT_URL or "https://api.openai.com/v1/chat/completions"
+    # URL padrão da OpenAI - SEMPRE usar esta a menos que AI_ENDPOINT_URL seja uma URL completa válida
+    DEFAULT_URL = "https://api.openai.com/v1/chat/completions"
+    
+    # Só usa AI_ENDPOINT_URL se for uma URL completa e válida (começa com https://)
+    if AI_ENDPOINT_URL and AI_ENDPOINT_URL.startswith("https://") and "/chat/completions" in AI_ENDPOINT_URL:
+        url = AI_ENDPOINT_URL
+    else:
+        url = DEFAULT_URL
+    
+    logger.info(f"Usando URL da API: {url}")
+    logger.info(f"Modelo: {AI_MODEL}")
     
     # Monta o conteúdo com texto e imagens
     content = [{"type": "text", "text": prompt}]
