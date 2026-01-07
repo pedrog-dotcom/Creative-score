@@ -197,8 +197,8 @@ def pick_frames(frames_dir: Path, max_frames: int) -> list:
 # IA Calls
 # ---------------------------
 def openai_request(payload: dict) -> dict:
-    """Chama OpenAI Responses API via HTTP requests (sem SDK)."""
-    url = AI_ENDPOINT_URL or "https://api.openai.com/v1/responses"
+    """Chama OpenAI Chat Completions API via HTTP requests (sem SDK)."""
+    url = AI_ENDPOINT_URL or "https://api.openai.com/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {AI_API_KEY}",
@@ -303,46 +303,36 @@ FORMATO DE SAÍDA (JSON):
 
 def build_openai_payload(prompt: str, frame_paths: list) -> dict:
     """
-    Payload para OpenAI Responses API.
-    Envia texto + imagens (frames). (Vídeo inteiro é evitado; usamos frames).
+    Payload para OpenAI Chat Completions API.
+    Envia texto + imagens (frames).
     """
-    content = [{"type": "input_text", "text": prompt}]
-    # adiciona frames como input_image
+    content = [{"type": "text", "text": prompt}]
+    # adiciona frames como image_url
     for p in frame_paths:
-        # Usaremos data URL base64 para simplificar (sem upload). Atenção ao tamanho; por isso limitamos MAX_FRAMES.
         import base64
         with open(p, "rb") as f:
             b64 = base64.b64encode(f.read()).decode("utf-8")
-        content.append({"type": "input_image", "image_url": f"data:image/jpeg;base64,{b64}"})
-
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/jpeg;base64,{b64}", "detail": "low"}
+        })
+    
     return {
         "model": AI_MODEL,
-        "input": [
+        "messages": [
             {"role": "user", "content": content}
         ],
-        # Ajuda a manter JSON “limpo”
-        "text": {"format": {"type": "json_object"}},
+        "response_format": {"type": "json_object"},
     }
 
 def extract_json_from_openai(resp_json: dict) -> dict:
-    """Extrai o JSON do output_text. Com text.format=json_object, normalmente vem pronto."""
-    # Tentativa 1: output_text direto
-    out_text = resp_json.get("output_text")
-    if out_text:
-        try:
-            return json.loads(out_text)
-        except Exception:
-            pass
-
-    # Tentativa 2: varrer outputs
-    for item in resp_json.get("output", []):
-        for c in item.get("content", []):
-            if c.get("type") in ("output_text", "text") and c.get("text"):
-                try:
-                    return json.loads(c["text"])
-                except Exception:
-                    continue
-    raise RuntimeError("Não consegui extrair JSON da resposta da IA")
+    """Extrai o JSON da resposta da API de Chat da OpenAI."""
+    try:
+        content = resp_json["choices"][0]["message"]["content"]
+        return json.loads(content)
+    except Exception as e:
+        logger.error(f"Erro ao extrair JSON: {e} | Resposta: {resp_json}")
+        raise RuntimeError(f"Não consegui extrair JSON da resposta da IA: {e}")
 
 # ---------------------------
 # Main
