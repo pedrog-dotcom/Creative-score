@@ -58,6 +58,19 @@ def now_utc_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def format_number(value) -> str:
+    """Formata número com separador de milhares, tratando valores inválidos."""
+    if value is None or value == 'N/A' or value == '':
+        return 'N/A'
+    try:
+        num = float(value)
+        if num == int(num):
+            return f"{int(num):,}".replace(',', '.')
+        return f"{num:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    except (ValueError, TypeError):
+        return str(value)
+
+
 def load_json(path: Path) -> Optional[Dict]:
     """Carrega arquivo JSON."""
     if not path.exists():
@@ -165,8 +178,8 @@ Analise este criativo de forma detalhada e estruturada.
 - CTR: {kpis.get('ctr_pct', 'N/A')}
 - Connect Rate: {kpis.get('connect_rate_pct', 'N/A')}
 - Bounce Rate: {kpis.get('bounce_rate_pct', 'N/A')}
-- Impressões: {kpis.get('impressions', 'N/A'):,}
-- Cliques: {kpis.get('clicks', 'N/A'):,}
+- Impressões: {format_number(kpis.get('impressions', 0))}
+- Cliques: {format_number(kpis.get('clicks', 0))}
 - Compras: {kpis.get('purchases', 'N/A')}
 - Checkouts: {kpis.get('checkouts', 'N/A')}
 {video_metrics_section}
