@@ -1,153 +1,104 @@
-name: Meta Creative Score + Downloads + AI (Weekly)
+name: Creative Score Pipeline V2
+
 on:
-  schedule:
-    # Segunda-feira 06:00 BRT (UTC-3) = 09:00 UTC
-    - cron: "0 9 * * 1"
   workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1'
+
+env:
+  META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+  META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+  META_GRAPH_VERSION: "v24.0"
+  AI_API_KEY: ${{ secrets.AI_API_KEY }}
+  AI_MODEL: ${{ secrets.AI_MODEL || 'gpt-4o' }}
+  AI_ENDPOINT_URL: ""
+  AI_TIMEOUT_SECONDS: "180"
+  AI_MAX_FRAMES: "8"
+
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
-    permissions:
-      contents: write
-    env:
-      META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
-      META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
-      META_CAMPAIGN_ID: "120240998569260670"
-      EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
-      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-      SLACK_CHANNEL_EMAIL: ${{ secrets.SLACK_CHANNEL_EMAIL }}
-      TZ: America/Sao_Paulo
-      # IA
-      AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
-      AI_ENDPOINT_URL: ${{ secrets.AI_ENDPOINT_URL }}
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
-      AI_MODEL: ${{ secrets.AI_MODEL }}
+    timeout-minutes: 60
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - name: Install system deps (ffmpeg)
+      - name: Install Python dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          pip install --upgrade pip
+          pip install pandas requests python-dotenv facebook-business moviepy pillow
 
-      - name: Install python deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install moviepy pillow openai
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            creatives_output/
+            history/
+          key: creative-score-cache-${{ github.run_number }}
+          restore-keys: |
+            creative-score-cache-
 
-      # ============================================
-      # PASSO 1: Download dos criativos (PRIMEIRO!)
-      # ============================================
       - name: Download creatives
         run: |
-          echo "=== PASSO 1: Download dos criativos ==="
+          echo "=== PASSO 1: Download de Criativos ==="
           python download_creatives.py
 
-      # ============================================
-      # PASSO 2: Calcular Performance Score
-      # ============================================
       - name: Run performance score
         run: |
-          echo "=== PASSO 2: Calculando scores ==="
+          echo "=== PASSO 2: Calcular Performance Score ==="
           python "Performance Score.py"
 
-      # ============================================
-      # PASSO 3: Consolidar dados (linkar scores aos criativos)
-      # ============================================
       - name: Consolidate data
         run: |
           echo "=== PASSO 3: Consolidando dados ==="
           python consolidate_data.py
 
-      # ============================================
-      # PASSO 4: Análise IA (com dados consolidados)
-      # ============================================
       - name: AI analyze creatives
         run: |
-          echo "=== PASSO 4: Análise de IA ==="
+          echo "=== PASSO 4: Analise de IA ==="
           python ai_analyze_creatives.py
 
-      # ============================================
-      # PASSO 5: Gerar relatório qualitativo
-      # ============================================
       - name: Generate qualitative report
         run: |
-          echo "=== PASSO 5: Gerando relatório qualitativo ==="
-          python generate_qualitative_report.py
+          echo "=== PASSO 5: Gerando Relatorio Qualitativo ==="
+          python generate_qualitative_report.py || echo "Relatorio qualitativo nao gerado"
 
-      # ============================================
-      # PASSO 6: Atualizar playbook de boas práticas
-      # ============================================
-      - name: Update creative playbook
+      - name: Update playbook
         run: |
-          echo "=== PASSO 6: Atualizando playbook ==="
+          echo "=== PASSO 6: Atualizando Playbook ==="
           python update_playbook.py
 
-      # Debug: verificar arquivos gerados
-      - name: Debug output
-        if: always()
+      - name: Commit and push results
         run: |
-          echo "---- LS creatives_output ----"
-          ls -la creatives_output || true
-          echo "---- LS analysis ----"
-          ls -la creatives_output/analysis || true
-          echo "---- Consolidated JSON ----"
-          head -n 50 creatives_output/consolidated_data.json || true
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add -A history/ || true
+          git add -A creatives_output/ || true
+          git add creative_score_automation.csv || true
+          git add summary_email.txt || true
+          git add *.log || true
+          if git diff --staged --quiet; then
+            echo "Nenhuma mudanca para commitar"
+          else
+            git commit -m "chore: Atualiza scores e analises - $(date +'%Y-%m-%d %H:%M')"
+            git push
+          fi
 
-      # Commit de arquivos gerados
-      - name: Commit generated files
-        if: always()
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || true
-          git add history/ creative_score_automation.csv creatives_output/ ai_cache/ summary_email.txt playbook/ reports/ || true
-          git diff --cached --quiet || git commit -m "chore: weekly run outputs (run $GITHUB_RUN_ID)"
-          git push || true
-
-      # Artifacts (backup)
       - name: Upload artifacts
-        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: meta-pipeline-output
+          name: creative-score-results-${{ github.run_number }}
           path: |
-            history/*.csv
             creative_score_automation.csv
-            creatives_output/**
-            ai_cache/**
-            playbook/**
-            reports/**
             summary_email.txt
-            *.log
-          if-no-files-found: warn
-
-      # Envia email no Slack
-      - name: Notify Slack via Email
-        if: always()
-        continue-on-error: true
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ env.EMAIL_USERNAME }}
-          password: ${{ env.EMAIL_PASSWORD }}
-          subject: Meta Pipeline — ${{ job.status }}
-          to: ${{ env.SLACK_CHANNEL_EMAIL }}
-          from: Meta Pipeline <${{ env.EMAIL_USERNAME }}>
-          body: |
-            Status: ${{ job.status }}
-            Repo: ${{ github.repository }}
-            Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-            Obs: O resumo detalhado do score está em summary_email.txt (artifacts / repo).
+            creatives_output/consolidated_data.json
+            creatives_output/analysis/
+            creatives_output/creative_playbook.md
+            history/
+          retention-days: 30
