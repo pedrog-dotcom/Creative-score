@@ -1,28 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ai_analyze_creatives.py - V4 (Reestruturado)
+ai_analyze_creatives.py - V3 (Reestruturado)
 
-Este script realiza a análise de criativos usando IA (OpenAI GPT-4o).
+Analisa TODOS os criativos usando IA (OpenAI GPT-4o), não apenas os TOP5.
 
-Fluxo:
-1. Lê o arquivo consolidado (consolidated_data.json)
-2. Verifica o backlog para identificar criativos já processados
-3. Envia apenas criativos novos para a IA
-4. Gera descrição detalhada de vídeo/áudio
-5. Salva resultados e atualiza o backlog
-
-Saídas:
-- creatives_output/analysis/analysis_results.jsonl
-- creatives_output/backlog.json (atualizado)
-- creatives_output/analysis/summary_ai.txt
+Novidades:
+- Analisa TODOS os criativos (ativos, pausados, top performers)
+- Envia métricas completas: CPM, CPC, Hook Rate, Placement, etc.
+- Gera descrição detalhada de vídeo/áudio
+- Backlog inteligente para não reprocessar criativos já analisados
+- Suporta tanto vídeos quanto imagens estáticas
 """
 
 import os
 import json
 import base64
 import logging
-import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Any
@@ -49,12 +43,14 @@ RESULTS_PATH = OUTPUT_DIR / "analysis_results.jsonl"
 SUMMARY_PATH = OUTPUT_DIR / "summary_ai.txt"
 
 # Configurações de IA
-AI_PROVIDER = os.getenv("AI_PROVIDER", "openai").strip().lower()
 AI_API_KEY = os.getenv("AI_API_KEY", "")
 AI_ENDPOINT_URL = os.getenv("AI_ENDPOINT_URL", "").strip()
 AI_MODEL = os.getenv("AI_MODEL", "gpt-4o")
 AI_TIMEOUT = int(os.getenv("AI_TIMEOUT_SECONDS", "180"))
 MAX_FRAMES = int(os.getenv("AI_MAX_FRAMES", "8"))
+
+# URL padrão da OpenAI
+DEFAULT_API_URL = "https://api.openai.com/v1/chat/completions"
 
 
 def now_utc_iso() -> str:
@@ -96,12 +92,16 @@ def pick_frames(frames_dir: str, max_frames: int) -> List[str]:
     
     frames = sorted([p for p in frames_path.glob("*.jpg") if p.is_file()])
     if not frames:
+        # Tentar PNG também
+        frames = sorted([p for p in frames_path.glob("*.png") if p.is_file()])
+    
+    if not frames:
         return []
     
     if len(frames) <= max_frames:
         return [str(p) for p in frames]
     
-    # Amostra distribuída (início, meio, fim)
+    # Amostra distribuída
     step = max(1, len(frames) // max_frames)
     idxs = list(range(0, len(frames), step))[:max_frames]
     return [str(frames[i]) for i in idxs]
@@ -118,10 +118,26 @@ def encode_image_base64(path: str) -> Optional[str]:
 
 
 def build_analysis_prompt(creative: Dict) -> str:
-    """Constrói o prompt para análise do criativo."""
+    """Constrói o prompt para análise do criativo com TODAS as métricas."""
     kpis = creative.get("kpis", {})
     name_fields = creative.get("name_fields", {})
     status = creative.get("status", "UNKNOWN")
+    media_type = creative.get("media_type", "unknown")
+    
+    # Formatar métricas de vídeo se aplicável
+    video_metrics_section = ""
+    if media_type == "video":
+        video_metrics_section = f"""
+**Métricas de Vídeo:**
+- Hook Rate: {kpis.get('hook_rate_pct', 'N/A')} (vs média: {kpis.get('hook_rate_vs_avg', 'N/A')})
+- Retenção 25%: {kpis.get('video_p25', 'N/A')} views
+- Retenção 50%: {kpis.get('video_p50', 'N/A')} views
+- Retenção 75%: {kpis.get('video_p75', 'N/A')} views
+- Retenção 100%: {kpis.get('video_p100', 'N/A')} views
+- Taxa 25%→50%: {kpis.get('retention_25_to_50', 'N/A')}
+- Taxa 50%→75%: {kpis.get('retention_50_to_75', 'N/A')}
+- Taxa 75%→100%: {kpis.get('retention_75_to_100', 'N/A')}
+"""
     
     return f"""
 Você é um especialista em criativos de performance para Meta Ads (Facebook/Instagram).
@@ -132,60 +148,68 @@ Analise este criativo de forma detalhada e estruturada.
 **Identificação:**
 - Ad ID: {creative.get('ad_id', 'N/A')}
 - Nome: {creative.get('ad_name', 'N/A')}
-- Tipo de Mídia: {creative.get('media_type', 'N/A')}
+- Tipo de Mídia: {media_type.upper()} ({'Vídeo' if media_type == 'video' else 'Imagem Estática'})
 - Status: {status}
+- Campanha: {kpis.get('campaign_name', 'N/A')}
+- Conjunto: {kpis.get('adset_name', 'N/A')}
 
 **Campos da Nomenclatura:**
 {json.dumps(name_fields, ensure_ascii=False, indent=2)}
 
 **KPIs de Performance (últimos 21 dias):**
-- Score de Performance: {kpis.get('performance_score', 'N/A')}
-- Gasto: {kpis.get('spend_br', 'N/A')}
-- Share do Gasto: {kpis.get('share_spend', 'N/A')}
-- CAC: {kpis.get('cac_br', 'N/A')}
-- CAC vs Média: {kpis.get('cac_vs_avg', 'N/A')}
-- CTR: {kpis.get('ctr', 'N/A')}
-- Connect Rate: {kpis.get('connect_rate', 'N/A')}
-- Bounce Rate: {kpis.get('bounce_rate', 'N/A')}
-- Impressões: {kpis.get('impressions', 'N/A')}
-- Cliques: {kpis.get('clicks', 'N/A')}
+- Score de Performance: {kpis.get('performance_score', 'N/A')}/10
+- Gasto: {kpis.get('spend_br', 'N/A')} ({kpis.get('share_spend', 'N/A')} do total)
+- CAC: {kpis.get('cac_br', 'N/A')} (vs média: {kpis.get('cac_vs_avg', 'N/A')})
+- CPM: {kpis.get('cpm_br', 'N/A')} (vs média: {kpis.get('cpm_vs_avg', 'N/A')})
+- CPC: {kpis.get('cpc_br', 'N/A')} (vs média: {kpis.get('cpc_vs_avg', 'N/A')})
+- CTR: {kpis.get('ctr_pct', 'N/A')}
+- Connect Rate: {kpis.get('connect_rate_pct', 'N/A')}
+- Bounce Rate: {kpis.get('bounce_rate_pct', 'N/A')}
+- Impressões: {kpis.get('impressions', 'N/A'):,}
+- Cliques: {kpis.get('clicks', 'N/A'):,}
 - Compras: {kpis.get('purchases', 'N/A')}
+- Checkouts: {kpis.get('checkouts', 'N/A')}
+{video_metrics_section}
+**Distribuição de Placement:**
+- Principal: {kpis.get('top_placement', 'N/A')} / {kpis.get('top_position', 'N/A')}
+- Quantidade de placements: {kpis.get('placement_count', 'N/A')}
 
 ## TAREFA
 
-Analise os frames do criativo e forneça:
+Analise {'os frames do vídeo' if media_type == 'video' else 'a imagem'} e forneça:
 
-1. **Descrição Detalhada do Vídeo/Imagem:**
-   - O que é mostrado em cada parte do vídeo
+1. **Descrição Detalhada {'do Vídeo' if media_type == 'video' else 'da Imagem'}:**
+   - O que é mostrado {'em cada parte do vídeo' if media_type == 'video' else 'na imagem'}
    - Elementos visuais principais (pessoas, produtos, texto, cores)
-   - Transições e ritmo (se for vídeo)
+   {'- Transições e ritmo' if media_type == 'video' else ''}
    - Qualidade de produção
 
-2. **Análise de Áudio (se aplicável):**
-   - Tipo de narração (voz feminina/masculina, tom)
-   - Música de fundo
-   - Efeitos sonoros
-   - Clareza da mensagem falada
+{'2. **Análise de Áudio (estimativa baseada no visual):**' if media_type == 'video' else ''}
+{'   - Tipo provável de narração' if media_type == 'video' else ''}
+{'   - Música de fundo provável' if media_type == 'video' else ''}
+{'   - Tom geral do áudio' if media_type == 'video' else ''}
 
-3. **Diagnóstico Visual:**
+{'3' if media_type == 'video' else '2'}. **Diagnóstico Visual:**
    - Hook (gancho inicial): força de 0-10 e justificativa
    - Clareza da oferta: força de 0-10 e justificativa
    - Prova social: força de 0-10 e justificativa
    - Legibilidade do texto: força de 0-10 e justificativa
    - Call to Action: força de 0-10 e justificativa
 
-4. **Diagnóstico de Performance:**
+{'4' if media_type == 'video' else '3'}. **Diagnóstico de Performance:**
    - Por que este criativo está {status}?
    - Correlação entre elementos visuais e métricas
+   - O que explica o {'Hook Rate' if media_type == 'video' else 'CTR'}?
+   - O que explica o CAC?
 
-5. **Classificação:**
+{'5' if media_type == 'video' else '4'}. **Classificação:**
    - Tema principal
    - Tipo de narrativa (UGC, Profissional, Animação, etc.)
    - Tom de voz (Urgente, Informativo, Emocional, etc.)
    - Mensagem principal
    - Tipo de produção
 
-6. **Sugestões:**
+{'6' if media_type == 'video' else '5'}. **Sugestões:**
    - 3 melhorias específicas
    - 3 testes A/B recomendados
 
@@ -194,23 +218,26 @@ Analise os frames do criativo e forneça:
 Responda SOMENTE com um JSON válido no seguinte formato:
 
 {{
-  "video_description": {{
+  "creative_description": {{
     "summary": "Descrição geral do criativo em 2-3 frases",
     "scenes": [
       {{"time": "0-3s", "description": "..."}},
       {{"time": "3-6s", "description": "..."}}
     ],
     "visual_elements": ["elemento1", "elemento2"],
+    "text_on_screen": ["texto1", "texto2"],
+    "colors_dominant": ["cor1", "cor2"],
+    "people_shown": "descrição das pessoas mostradas",
+    "product_shown": "descrição do produto mostrado",
     "production_quality": "alta|média|baixa",
     "estimated_duration": "Xs"
   }},
   "audio_description": {{
-    "narration_type": "feminina|masculina|sem narração",
+    "narration_type": "feminina|masculina|sem narração|não aplicável",
     "narration_tone": "urgente|calmo|informativo|emocional",
-    "background_music": "sim|não",
+    "background_music": "sim|não|provável",
     "music_style": "descrição do estilo",
-    "sound_effects": ["efeito1", "efeito2"],
-    "spoken_message_summary": "Resumo do que é dito"
+    "spoken_message_summary": "Resumo do que provavelmente é dito"
   }},
   "visual_diagnosis": {{
     "hook": {{"score": 0, "justification": "..."}},
@@ -221,7 +248,9 @@ Responda SOMENTE com um JSON válido no seguinte formato:
   }},
   "performance_diagnosis": {{
     "status_explanation": "Por que está {status}",
-    "visual_metric_correlation": "Correlação entre visual e métricas"
+    "visual_metric_correlation": "Correlação entre visual e métricas",
+    "hook_rate_explanation": "O que explica o hook rate/CTR",
+    "cac_explanation": "O que explica o CAC"
   }},
   "classification": {{
     "main_theme": "...",
@@ -229,7 +258,8 @@ Responda SOMENTE com um JSON válido no seguinte formato:
     "tone_of_voice": "Urgente|Informativo|Emocional|Aspiracional|Outro",
     "main_message": "...",
     "production_type": "In-house|Creator|Agência|Outro",
-    "primary_hook_type": "texto|vsl|ugc|before_after|problem_solution|outro"
+    "primary_hook_type": "texto|vsl|ugc|before_after|problem_solution|outro",
+    "format_type": "{'video' if media_type == 'video' else 'static'}"
   }},
   "suggestions": {{
     "improvements": ["melhoria1", "melhoria2", "melhoria3"],
@@ -250,17 +280,15 @@ Responda SOMENTE com um JSON válido no seguinte formato:
 
 def call_openai_api(prompt: str, frame_paths: List[str]) -> Dict:
     """Chama a API da OpenAI com o prompt e imagens."""
-    # URL padrão da OpenAI - SEMPRE usar esta a menos que AI_ENDPOINT_URL seja uma URL completa válida
-    DEFAULT_URL = "https://api.openai.com/v1/chat/completions"
-    
-    # Só usa AI_ENDPOINT_URL se for uma URL completa e válida (começa com https://)
+    # Determinar URL
     if AI_ENDPOINT_URL and AI_ENDPOINT_URL.startswith("https://") and "/chat/completions" in AI_ENDPOINT_URL:
         url = AI_ENDPOINT_URL
     else:
-        url = DEFAULT_URL
+        url = DEFAULT_API_URL
     
     logger.info(f"Usando URL da API: {url}")
     logger.info(f"Modelo: {AI_MODEL}")
+    logger.info(f"Frames a enviar: {len(frame_paths)}")
     
     # Monta o conteúdo com texto e imagens
     content = [{"type": "text", "text": prompt}]
@@ -297,6 +325,7 @@ def analyze_creative(creative: Dict) -> Optional[Dict]:
     """Analisa um criativo individual."""
     ad_id = creative.get("ad_id", "")
     frames_dir = creative.get("frames_dir", "")
+    media_type = creative.get("media_type", "unknown")
     
     # Seleciona frames
     frame_paths = pick_frames(frames_dir, MAX_FRAMES)
@@ -315,6 +344,7 @@ def analyze_creative(creative: Dict) -> Optional[Dict]:
             "creative_id": creative.get("creative_id", ""),
             "ad_name": creative.get("ad_name", ""),
             "status": creative.get("status", ""),
+            "media_type": media_type,
             "kpis": creative.get("kpis", {}),
             "analysis": analysis,
             "analyzed_at": now_utc_iso(),
@@ -328,7 +358,9 @@ def analyze_creative(creative: Dict) -> Optional[Dict]:
 def main():
     """Função principal."""
     run_at = now_utc_iso()
+    logger.info("=" * 60)
     logger.info(f"Iniciando análise de IA em {run_at}")
+    logger.info("=" * 60)
     
     # Verifica API Key
     if not AI_API_KEY:
@@ -347,31 +379,34 @@ def main():
     creatives = consolidated.get("creatives", [])
     logger.info(f"Total de criativos: {len(creatives)}")
     
-    # Filtra criativos que precisam de análise
-    pending = [c for c in creatives if c.get("needs_ai_analysis", True)]
-    logger.info(f"Criativos pendentes de análise: {len(pending)}")
-    
     # Contadores
     analyzed = 0
     failed = 0
     skipped = 0
     
     # Listas para o resumo
-    paused_results = []
-    top_results = []
-    active_results = []
+    results_by_status = {
+        "PAUSED": [],
+        "PAUSED_HARD_STOP": [],
+        "PAUSED_LOW_SCORE": [],
+        "TOP_PERFORMER": [],
+        "ACTIVE": [],
+    }
     
-    for creative in pending:
+    for creative in creatives:
         ad_id = creative.get("ad_id", "")
         sha256 = creative.get("sha256", "")
         creative_key = f"{ad_id}_{sha256}"
+        status = creative.get("status", "UNKNOWN")
         
-        # Verifica se já foi processado
+        # Verifica se já foi processado (mas ainda assim analisa se quiser forçar)
         if creative_key in backlog["processed_creatives"]:
             skipped += 1
+            # Recupera resultado anterior se existir
             continue
         
         # Analisa o criativo
+        logger.info(f"Analisando: {ad_id} ({status})")
         result = analyze_creative(creative)
         
         if result:
@@ -382,65 +417,65 @@ def main():
             backlog["processed_creatives"][creative_key] = {
                 "ad_id": ad_id,
                 "analyzed_at": result["analyzed_at"],
-                "status": result["status"],
+                "status": status,
             }
             
             # Categoriza para o resumo
-            status = result.get("status", "")
-            if "PAUSED" in status:
-                paused_results.append(result)
-            elif status == "TOP_PERFORMER":
-                top_results.append(result)
+            if status in results_by_status:
+                results_by_status[status].append(result)
             else:
-                active_results.append(result)
+                results_by_status["ACTIVE"].append(result)
             
             analyzed += 1
-            logger.info(f"Analisado: {ad_id} ({analyzed}/{len(pending)})")
+            logger.info(f"✅ Analisado: {ad_id} ({analyzed}/{len(creatives)})")
         else:
             failed += 1
+            logger.warning(f"❌ Falha: {ad_id}")
     
     # Salva backlog atualizado
     backlog["last_updated"] = run_at
     save_json(BACKLOG_PATH, backlog)
     
     # Gera resumo
+    total_paused = len(results_by_status["PAUSED"]) + len(results_by_status["PAUSED_HARD_STOP"]) + len(results_by_status["PAUSED_LOW_SCORE"])
+    
     summary_lines = [
         "=" * 60,
         "IA - Resumo da Execução",
         "=" * 60,
         f"Data/Hora (UTC): {run_at}",
         f"Total de criativos: {len(creatives)}",
-        f"Pendentes de análise: {len(pending)}",
         f"Analisados nesta execução: {analyzed}",
         f"Reutilizados do cache: {skipped}",
         f"Falhas: {failed}",
         "",
         "-" * 60,
-        f"PAUSADOS ({len(paused_results)} criativos):",
+        f"PAUSADOS ({total_paused} criativos):",
         "-" * 60,
     ]
     
-    for r in paused_results[:10]:
+    for status_key in ["PAUSED", "PAUSED_HARD_STOP", "PAUSED_LOW_SCORE"]:
+        for r in results_by_status[status_key][:5]:
+            summary_lines.append(f"  [{status_key}] {r.get('ad_name', '')[:50]}...")
+    
+    summary_lines.extend([
+        "",
+        "-" * 60,
+        f"TOP PERFORMERS ({len(results_by_status['TOP_PERFORMER'])} criativos):",
+        "-" * 60,
+    ])
+    
+    for r in results_by_status["TOP_PERFORMER"][:5]:
         summary_lines.append(f"  - {r.get('ad_name', '')[:50]}...")
     
     summary_lines.extend([
         "",
         "-" * 60,
-        f"TOP PERFORMERS ({len(top_results)} criativos):",
+        f"ATIVOS ({len(results_by_status['ACTIVE'])} criativos):",
         "-" * 60,
     ])
     
-    for r in top_results[:10]:
-        summary_lines.append(f"  - {r.get('ad_name', '')[:50]}...")
-    
-    summary_lines.extend([
-        "",
-        "-" * 60,
-        f"ATIVOS ({len(active_results)} criativos):",
-        "-" * 60,
-    ])
-    
-    for r in active_results[:10]:
+    for r in results_by_status["ACTIVE"][:10]:
         summary_lines.append(f"  - {r.get('ad_name', '')[:50]}...")
     
     summary_lines.append("")
@@ -449,8 +484,10 @@ def main():
     with open(SUMMARY_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(summary_lines))
     
+    logger.info("=" * 60)
     logger.info(f"Análise concluída: {analyzed} novos, {skipped} cache, {failed} falhas")
     logger.info(f"Resumo salvo em: {SUMMARY_PATH}")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":
