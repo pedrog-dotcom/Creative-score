@@ -263,19 +263,25 @@ def fetch_ads_from_campaigns(campaign_ids: List[str]) -> List[Dict]:
 
 
 # ==============================================================================
-# 3) BUSCAR URLs DE VÍDEOS
+# 3) BUSCAR URLs DE VÍDEOS E THUMBNAILS
 # ==============================================================================
-def fetch_video_urls(video_ids: List[str]) -> Dict[str, str]:
-    """Busca URLs de download dos vídeos."""
+def fetch_video_urls(video_ids: List[str]) -> Dict[str, Dict[str, str]]:
+    """
+    Busca URLs de download dos vídeos e thumbnails.
+    Retorna dict com 'source' (URL do vídeo) e 'thumbnail' (URL da thumbnail).
+    """
     logger.info(f"Buscando URLs de {len(video_ids)} vídeos...")
     
-    video_urls = {}
+    video_data = {}
+    
+    # Campos a buscar - source para download, thumbnails como fallback
+    fields = "id,source,thumbnails,picture,permalink_url"
     
     # Processa em lotes de 50
     for i in range(0, len(video_ids), 50):
         chunk = video_ids[i:i+50]
         batch = [
-            {"method": "GET", "relative_url": f"{vid}?fields=source"}
+            {"method": "GET", "relative_url": f"{vid}?fields={fields}"}
             for vid in chunk
         ]
         
@@ -285,12 +291,72 @@ def fetch_video_urls(video_ids: List[str]) -> Dict[str, str]:
             if res and res.get("code") == 200:
                 body = json.loads(res.get("body", "{}"))
                 vid = body.get("id")
+                
+                if not vid:
+                    continue
+                
+                data = {"source": None, "thumbnail": None}
+                
+                # Tentar obter source (URL do vídeo)
                 source = body.get("source")
-                if vid and source:
-                    video_urls[vid] = source
+                if source:
+                    data["source"] = source
+                    logger.info(f"  Vídeo {vid}: source encontrado")
+                
+                # Tentar obter thumbnail
+                thumbnails = body.get("thumbnails", {}).get("data", [])
+                if thumbnails:
+                    # Pegar a maior thumbnail disponível
+                    best_thumb = max(thumbnails, key=lambda x: x.get("height", 0) * x.get("width", 0))
+                    data["thumbnail"] = best_thumb.get("uri")
+                    logger.info(f"  Vídeo {vid}: thumbnail encontrada")
+                elif body.get("picture"):
+                    data["thumbnail"] = body.get("picture")
+                    logger.info(f"  Vídeo {vid}: picture encontrada")
+                
+                if data["source"] or data["thumbnail"]:
+                    video_data[vid] = data
+            else:
+                # Log do erro para debug
+                error_body = res.get("body", "{}") if res else "{}"
+                logger.warning(f"  Erro ao buscar vídeo: {error_body[:200]}")
     
-    logger.info(f"URLs obtidas: {len(video_urls)}")
-    return video_urls
+    sources_found = sum(1 for v in video_data.values() if v.get("source"))
+    thumbs_found = sum(1 for v in video_data.values() if v.get("thumbnail"))
+    
+    logger.info(f"URLs obtidas: {len(video_data)} (sources: {sources_found}, thumbnails: {thumbs_found})")
+    return video_data
+
+
+def fetch_video_thumbnails_from_creative(creative_id: str) -> Optional[str]:
+    """
+    Busca thumbnail do vídeo via AdCreative.
+    Fallback quando a API de vídeo não retorna source.
+    """
+    try:
+        data = graph_request(
+            creative_id,
+            {"fields": "thumbnail_url,image_url,object_story_spec"}
+        )
+        
+        # Tentar thumbnail_url
+        if data.get("thumbnail_url"):
+            return data["thumbnail_url"]
+        
+        # Tentar image_url
+        if data.get("image_url"):
+            return data["image_url"]
+        
+        # Tentar dentro de object_story_spec
+        spec = data.get("object_story_spec", {})
+        video_data = spec.get("video_data", {})
+        if video_data.get("image_url"):
+            return video_data["image_url"]
+        
+    except Exception as e:
+        logger.warning(f"Erro ao buscar thumbnail do creative {creative_id}: {e}")
+    
+    return None
 
 
 # ==============================================================================
@@ -376,43 +442,91 @@ def process_creatives(ads: List[Dict]) -> List[Dict]:
     for ad in video_ads:
         ad_id = ad["ad_id"]
         video_id = ad["video_id"]
-        video_url = video_urls.get(video_id)
+        creative_id = ad.get("creative_id", "")
         
-        if not video_url:
-            logger.warning(f"URL não encontrada para vídeo {video_id}")
-            continue
+        # Obter dados do vídeo (source e/ou thumbnail)
+        video_info = video_urls.get(video_id, {})
+        video_source = video_info.get("source") if isinstance(video_info, dict) else video_info
+        video_thumb = video_info.get("thumbnail") if isinstance(video_info, dict) else None
         
         # Nome do arquivo
         safe_name = sanitize_filename(ad["ad_name"])
         video_path = VIDEOS_DIR / f"{ad_id}_{safe_name}.mp4"
         frames_dir = FRAMES_ROOT / ad_id
+        thumbnail_path = IMAGES_DIR / f"{ad_id}_{safe_name}_thumb.jpg"
         
-        # Download
-        if not video_path.exists():
-            logger.info(f"Baixando vídeo: {ad_id}")
-            if not download_file(video_url, video_path):
-                continue
+        video_downloaded = False
+        thumbnail_downloaded = False
         
-        # Extrair frames
-        if not frames_dir.exists() or not list(frames_dir.glob("*.jpg")):
-            logger.info(f"Extraindo frames: {ad_id}")
-            extract_frames(video_path, frames_dir, FRAMES_PER_VIDEO)
+        # Tentar baixar o vídeo se tiver source
+        if video_source:
+            if not video_path.exists():
+                logger.info(f"Baixando vídeo: {ad_id}")
+                video_downloaded = download_file(video_source, video_path)
+            else:
+                video_downloaded = True
+            
+            # Extrair frames do vídeo
+            if video_downloaded and (not frames_dir.exists() or not list(frames_dir.glob("*.jpg"))):
+                logger.info(f"Extraindo frames: {ad_id}")
+                extract_frames(video_path, frames_dir, FRAMES_PER_VIDEO)
+        
+        # Se não conseguiu baixar o vídeo, tentar thumbnail como fallback
+        if not video_downloaded:
+            # Tentar thumbnail da API de vídeo
+            if video_thumb:
+                logger.info(f"Baixando thumbnail do vídeo {video_id} (fallback)")
+                thumbnail_downloaded = download_file(video_thumb, thumbnail_path)
+            
+            # Tentar thumbnail via AdCreative
+            if not thumbnail_downloaded and creative_id:
+                logger.info(f"Buscando thumbnail via AdCreative {creative_id}")
+                creative_thumb = fetch_video_thumbnails_from_creative(creative_id)
+                if creative_thumb:
+                    thumbnail_downloaded = download_file(creative_thumb, thumbnail_path)
+            
+            # Se conseguiu thumbnail, criar um "frame" a partir dela
+            if thumbnail_downloaded and thumbnail_path.exists():
+                frames_dir.mkdir(parents=True, exist_ok=True)
+                frame_path = frames_dir / "frame_000.jpg"
+                if not frame_path.exists():
+                    try:
+                        import shutil
+                        shutil.copy(thumbnail_path, frame_path)
+                        logger.info(f"  Thumbnail copiada como frame para {ad_id}")
+                    except Exception as e:
+                        logger.warning(f"  Erro ao copiar thumbnail: {e}")
+        
+        # Só adicionar ao catálogo se tiver alguma mídia
+        has_video = video_downloaded and video_path.exists()
+        has_frames = frames_dir.exists() and list(frames_dir.glob("*.jpg"))
+        has_thumbnail = thumbnail_downloaded and thumbnail_path.exists()
+        
+        if not (has_video or has_frames or has_thumbnail):
+            logger.warning(f"Nenhuma mídia disponível para vídeo {video_id} (ad {ad_id})")
+            continue
         
         # Calcular hash
-        sha256 = compute_sha256(video_path) if video_path.exists() else ""
+        sha256 = ""
+        if has_video:
+            sha256 = compute_sha256(video_path)
+        elif has_thumbnail:
+            sha256 = compute_sha256(thumbnail_path)
         
         catalog.append({
             "ad_id": ad_id,
             "ad_name": ad["ad_name"],
             "effective_status": ad["effective_status"],
             "campaign_id": ad["campaign_id"],
-            "creative_id": ad["creative_id"],
+            "creative_id": creative_id,
             "media_type": "video",
             "object_type": ad["object_type"],
-            "local_path": str(video_path),
+            "local_path": str(video_path) if has_video else str(thumbnail_path),
             "frames_dir": str(frames_dir),
             "sha256": sha256,
             "video_id": video_id,
+            "has_video_file": has_video,
+            "has_thumbnail": has_thumbnail,
         })
     
     # Processar imagens
