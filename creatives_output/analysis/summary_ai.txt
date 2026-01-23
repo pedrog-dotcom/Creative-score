@@ -1,27 +1,22 @@
 ============================================================
-IA - Resumo da Execução
+RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-01-22T19:36:42Z
-Total de criativos: 6
-Analisados nesta execução: 6
-Reutilizados do cache: 0
-Falhas: 0
+Data/Hora (UTC): 2026-01-23T00:54:04Z
+Total de criativos: 5
 
-------------------------------------------------------------
-PAUSADOS (6 criativos):
-------------------------------------------------------------
-  [PAUSED] WL400_ADS-9-1_VAR1_January_BR_IMG_FB_Normal_NA_NoA...
-  [PAUSED] WL400_ADS-20_VAR1_January_BR_IMG_FB_Normal_NA_NoAc...
-  [PAUSED] WL400_ADS-9_VAR1_January_BR_IMG_FB_Normal_NA_NoAct...
-  [PAUSED] WL400_ADS-21_VAR1_January_BR_IMG_FB_Normal_NA_NoAc...
-  [PAUSED] WL371_15kg3mesesAbravanel_VAR2_January_BR_IMG_FB_N...
+✅ Analisados nesta execução: 0
+⏭️ Pulados (já processados): 5
+⚠️ Sem mídia disponível: 0
+❌ Falhas: 0
 
-------------------------------------------------------------
-TOP PERFORMERS (0 criativos):
-------------------------------------------------------------
+============================================================
+CRIATIVOS ANALISADOS:
+============================================================
 
-------------------------------------------------------------
-ATIVOS (0 criativos):
-------------------------------------------------------------
+🏆 TOP PERFORMERS (score >= 7): 0
+
+📊 MÉDIOS (score 4-7): 0
+
+⚠️ BAIXO DESEMPENHO (score < 4): 0
 
 ============================================================
