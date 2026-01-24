@@ -1,10 +1,10 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-01-23T00:54:04Z
-Total de criativos: 5
+Data/Hora (UTC): 2026-01-24T22:23:47Z
+Total de criativos: 43
 
-✅ Analisados nesta execução: 0
+✅ Analisados nesta execução: 38
 ⏭️ Pulados (já processados): 5
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
@@ -13,10 +13,25 @@ Total de criativos: 5
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 0
+🏆 TOP PERFORMERS (score >= 7): 7
+  - WL401_ADS01_VAR1_January_BR_VID_FB_Normal_NA_Actor... (score: 7.37)
+  - WL350_GerenciarTodaSuaJornada_VAR1_December_BR_VID... (score: 8.52)
+  - WL310_NutriIncluso_VAR2_December_BR_VID_FB_Partner... (score: 8.7)
+  - WL310_NutriIncluso_VAR2_December_BR_VID_FB_Partner... (score: 7.05)
+  - WL401_ADS01_VAR1_January_BR_VID_FB_Normal_NA_Actor... (score: 8.03)
 
-📊 MÉDIOS (score 4-7): 0
+📊 MÉDIOS (score 4-7): 5
+  - WL401_ADS01_VAR2_January_BR_VID_FB_Normal_NA_Actor... (score: 6.01)
+  - WL401_ADS01_VAR2_January_BR_VID_FB_Normal_NA_Actor... (score: 4.11)
+  - WL401_ADS01_VAR1_January_BR_VID_FB_Normal_NA_Actor... (score: 4.11)
+  - WL350_GerenciarTodaSuaJornada_VAR1_December_BR_VID... (score: 4.07)
+  - WL401_ADS01_VAR2_January_BR_VID_FB_Normal_NA_Actor... (score: 4.01)
 
-⚠️ BAIXO DESEMPENHO (score < 4): 0
+⚠️ BAIXO DESEMPENHO (score < 4): 26
+  - WL379_13kgComVoy_VAR4_January_BR_VID_FB_Partnershi... (score: 3.84)
+  - WL379_13kgComVoy_VAR3_January_BR_VID_FB_Partnershi... (score: 1.7)
+  - Ad11_VID_Wht_rodrigoamgoes_VAR04 – Copy... (score: N/A)
+  - Ad18_VID_Wht_jotamatiotti_109_B/A_VAR01 - Fixed... (score: N/A)
+  - Ad16_VID_Wht_jotamatiotti_107_Cansado_VAR06... (score: N/A)
 
 ============================================================

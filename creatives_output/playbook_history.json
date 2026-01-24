@@ -21,6 +21,28 @@
         "text_legibility": 8.67,
         "cta": 6.17
       }
+    },
+    {
+      "run_at": "2026-01-24T22:36:31Z",
+      "total_analyses": 38,
+      "top_performers": 1,
+      "paused": 11,
+      "active": 26,
+      "top_hooks": {},
+      "avg_scores_top": {
+        "hook": 0,
+        "offer_clarity": 0,
+        "social_proof": 0,
+        "text_legibility": 0,
+        "cta": 0
+      },
+      "avg_scores_paused": {
+        "hook": 0,
+        "offer_clarity": 0,
+        "social_proof": 0,
+        "text_legibility": 0,
+        "cta": 0
+      }
     }
   ],
   "accumulated_insights": [
@@ -29,6 +51,12 @@
       "insight": "Top hooks: []",
       "top_count": 0,
       "paused_count": 6
+    },
+    {
+      "date": "2026-01-24T22:36:31Z",
+      "insight": "Top hooks: []",
+      "top_count": 1,
+      "paused_count": 11
     }
   ]
 }
