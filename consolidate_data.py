@@ -371,7 +371,7 @@ def consolidate() -> None:
             "kpis": kpis,
             "name_fields": name_fields,
             "already_processed_by_ai": already_processed,
-            "needs_ai_analysis": True,  # Agora TODOS precisam de análise
+            "needs_ai_analysis": not already_processed,
         }
         
         consolidated["creatives"].append(creative_data)
