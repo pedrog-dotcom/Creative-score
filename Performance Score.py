@@ -54,14 +54,17 @@ DATE_START = START_DATE_DT.strftime("%Y-%m-%d")
 DATE_END = END_DATE_DT.strftime("%Y-%m-%d")
 
 # Janelas de atribuição
-WINDOW_STD = None  # padrão da conta
-WINDOW_INC = ['1d_click']  # incremental
+WINDOW_STD = ["7d_click", "1d_view"]  # padrão explicitamente
+WINDOW_INC = ["1d_click"]  # incremental
+
+# Custom event: questionnaire started
+QUESTIONNAIRE_STARTED_EVENT_ID = "1270439044150351"
 
 # Regras do negócio
 HARD_SPEND_LIMIT = 1500.0
 HARD_CPP_LIMIT = 1500.0
 SCORE_CUTOFF = 3.0
-MIN_ACTIVE_AFTER = 30
+MIN_ACTIVE_PER_CAMPAIGN = 20
 MIN_IMPRESSIONS_SCORE = 10000
 MIN_AGE_DAYS_SCORE = 6
 
@@ -108,6 +111,29 @@ def get_action_exact(actions_list: list, action_type: str) -> float:
     """Obtém valor exato de uma action específica."""
     d = actions_to_dict(actions_list)
     return float(d.get(action_type, 0.0))
+
+
+def get_custom_event_value(actions_list: list, event_id: str) -> float:
+    """Obtém valor de um custom event específico pelo ID."""
+    if not isinstance(actions_list, list):
+        return 0.0
+    total = 0.0
+    for action in actions_list:
+        try:
+            action_type = str(action.get("action_type", "") or "")
+            action_target_id = str(action.get("action_target_id", "") or "")
+            action_name = str(action.get("action_name", "") or "")
+            if action_target_id == str(event_id):
+                total += float(action.get("value", 0) or 0)
+                continue
+            if event_id and event_id in action_type:
+                total += float(action.get("value", 0) or 0)
+                continue
+            if action_type == "offsite_conversion.fb_pixel_custom" and action_name == str(event_id):
+                total += float(action.get("value", 0) or 0)
+        except Exception:
+            continue
+    return total
 
 
 def minmax_norm_pos(x: float, xmin: float, xmax: float) -> float:
@@ -471,8 +497,8 @@ def compute_kpis(df: pd.DataFrame) -> pd.DataFrame:
         lambda r: get_action_exact(r.get("actions_inc", []), "landing_page_view"),
         axis=1
     )
-    df["custom_event_inc"] = df.apply(
-        lambda r: get_action_exact(r.get("actions_inc", []), "offsite_conversion.fb_pixel_custom"),
+    df["questionnaire_started_inc"] = df.apply(
+        lambda r: get_custom_event_value(r.get("actions_inc", []), QUESTIONNAIRE_STARTED_EVENT_ID),
         axis=1
     )
     df["inc_initiate_checkout"] = df.apply(
@@ -495,10 +521,12 @@ def compute_kpis(df: pd.DataFrame) -> pd.DataFrame:
         lambda r: safe_div(r["lpv_inc"], r["link_clicks_std"]),
         axis=1
     )
-    df["bounce_rate"] = df.apply(
-        lambda r: safe_div(r["custom_event_inc"], r["lpv_inc"]),
-        axis=1
-    )
+    def calc_bounce_rate(row):
+        lpv = float(row.get("lpv_inc", 0.0) or 0.0)
+        denom = max(lpv - 1.0, 0.0)
+        return safe_div(row.get("questionnaire_started_inc", 0.0), denom)
+
+    df["bounce_rate"] = df.apply(calc_bounce_rate, axis=1)
     
     # Custos
     df["spend_std"] = pd.to_numeric(df.get("spend_std", 0.0), errors="coerce").fillna(0.0)
@@ -555,7 +583,7 @@ def compute_score_with_hook_rate(df: pd.DataFrame) -> pd.DataFrame:
         corr = {}
         for k in kpis:
             try:
-                c = base[k].corr(base["cac"])
+                c = base[k].corr(base["cac"], method="spearman")
                 corr[k] = 0.0 if pd.isna(c) else float(abs(c))
             except Exception:
                 corr[k] = 0.0
@@ -737,13 +765,19 @@ def main():
     ].copy()
     
     to_pause_hard = []
-    remaining_active = active_count
+    active_by_campaign = (
+        df[df["effective_status"] == "ACTIVE"]
+        .groupby("campaign_id")
+        .size()
+        .to_dict()
+    )
     
     for _, row in hard_candidates.iterrows():
-        if remaining_active <= MIN_ACTIVE_AFTER:
-            break
+        campaign_id = row["campaign_id"]
+        if active_by_campaign.get(campaign_id, 0) <= MIN_ACTIVE_PER_CAMPAIGN:
+            continue
         to_pause_hard.append(str(row["ad_id"]))
-        remaining_active -= 1
+        active_by_campaign[campaign_id] = active_by_campaign.get(campaign_id, 0) - 1
     
     logger.info(f"  - Candidatos HARD: {len(hard_candidates)} | Vai pausar: {len(to_pause_hard)}")
     
@@ -767,10 +801,11 @@ def main():
     to_pause_score = []
     
     for _, row in score_candidates.sort_values("performance_score").iterrows():
-        if remaining_active <= MIN_ACTIVE_AFTER:
-            break
+        campaign_id = row["campaign_id"]
+        if active_by_campaign.get(campaign_id, 0) <= MIN_ACTIVE_PER_CAMPAIGN:
+            continue
         to_pause_score.append(str(row["ad_id"]))
-        remaining_active -= 1
+        active_by_campaign[campaign_id] = active_by_campaign.get(campaign_id, 0) - 1
     
     logger.info(f"  - Elegíveis para SCORE: {len(score_candidates)}")
     logger.info(f"  - Abaixo do cutoff ({SCORE_CUTOFF}): {len(score_candidates)} | Vai pausar: {len(to_pause_score)}")
@@ -794,7 +829,7 @@ def main():
         "ctr", "cpm_calc", "cpc_calc", "hook_rate",
         "video_p25", "video_p50", "video_p75", "video_p100",
         "retention_25_to_50", "retention_50_to_75", "retention_75_to_100",
-        "lpv_inc", "custom_event_inc", "inc_initiate_checkout", "inc_purchase",
+        "lpv_inc", "questionnaire_started_inc", "inc_initiate_checkout", "inc_purchase",
         "purchase_std", "connect_rate", "bounce_rate",
         "cac", "cost_per_checkout", "cpp_std",
         "performance_score", "pause_reason", "is_top5",
@@ -817,6 +852,8 @@ def main():
     logger.info(f"Latest salvo em: {latest_path}")
     
     # 14) Gerar resumo
+    remaining_active = sum(active_by_campaign.values())
+
     summary_lines = [
         "=" * 60,
         "Performance Score V2 - Resumo",

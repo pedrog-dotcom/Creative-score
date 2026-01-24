@@ -414,6 +414,31 @@ def extract_frames(video_path: Path, frames_dir: Path, num_frames: int = 12) -> 
     return extracted
 
 
+def transcode_video(video_path: Path, target_path: Path) -> Optional[Path]:
+    """Transcodifica vídeo para altura e FPS definidos."""
+    if target_path.exists():
+        return target_path
+
+    try:
+        clip = VideoFileClip(str(video_path))
+        resized = clip.resize(height=VIDEO_HEIGHT) if VIDEO_HEIGHT else clip
+        resized.write_videofile(
+            str(target_path),
+            fps=VIDEO_FPS,
+            codec="libx264",
+            audio=False,
+            preset="medium",
+            threads=2,
+            logger=None,
+        )
+        clip.close()
+        resized.close()
+        return target_path
+    except Exception as e:
+        logger.error(f"Erro ao transcodificar vídeo {video_path}: {e}")
+        return None
+
+
 # ==============================================================================
 # 5) PROCESSAR CRIATIVOS
 # ==============================================================================
@@ -452,6 +477,7 @@ def process_creatives(ads: List[Dict]) -> List[Dict]:
         # Nome do arquivo
         safe_name = sanitize_filename(ad["ad_name"])
         video_path = VIDEOS_DIR / f"{ad_id}_{safe_name}.mp4"
+        normalized_path = VIDEOS_DIR / f"{ad_id}_{safe_name}_{VIDEO_HEIGHT}p_{VIDEO_FPS}fps.mp4"
         frames_dir = FRAMES_ROOT / ad_id
         thumbnail_path = IMAGES_DIR / f"{ad_id}_{safe_name}_thumb.jpg"
         
@@ -465,6 +491,12 @@ def process_creatives(ads: List[Dict]) -> List[Dict]:
                 video_downloaded = download_file(video_source, video_path)
             else:
                 video_downloaded = True
+            
+            # Transcodificar para 360p/4fps quando possível
+            if video_downloaded:
+                transcoded = transcode_video(video_path, normalized_path)
+                if transcoded:
+                    video_path = transcoded
             
             # Extrair frames do vídeo
             if video_downloaded and (not frames_dir.exists() or not list(frames_dir.glob("*.jpg"))):
