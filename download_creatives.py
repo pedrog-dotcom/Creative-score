@@ -614,6 +614,8 @@ def process_creatives(ads: List[Dict]) -> List[Dict]:
             "frames_dir": str(frames_dir),
             "sha256": sha256,
             "video_id": "",
+            "has_video_file": False,
+            "has_thumbnail": False,
         })
     
     return catalog
@@ -632,7 +634,8 @@ def save_catalog(catalog: List[Dict]) -> None:
     
     fieldnames = [
         "ad_id", "ad_name", "effective_status", "campaign_id", "creative_id",
-        "media_type", "object_type", "local_path", "frames_dir", "sha256", "video_id"
+        "media_type", "object_type", "local_path", "frames_dir", "sha256", "video_id",
+        "has_video_file", "has_thumbnail",
     ]
     
     with open(catalog_path, "w", newline="", encoding="utf-8") as f:
