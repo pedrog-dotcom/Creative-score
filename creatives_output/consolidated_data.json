@@ -1,17 +1,17 @@
 {
-  "run_at": "2026-01-24T22:23:46Z",
+  "run_at": "2026-01-26T09:59:38Z",
   "metadata": {
     "total_creatives": 43,
-    "total_spend": "R$ 203.434,61",
-    "total_spend_raw": 203434.61000000002,
-    "avg_cpa": "R$ 685,76",
-    "avg_cpa_raw": 685.7562535137419,
-    "avg_cpm": "R$ 24,09",
-    "avg_cpm_raw": 24.090560014508505,
-    "avg_cpc": "R$ 2,89",
-    "avg_cpc_raw": 2.894633290667573,
-    "avg_hook_rate": "78.83%",
-    "avg_hook_rate_raw": 0.7882815434760698,
+    "total_spend": "R$ 230.383,38",
+    "total_spend_raw": 230383.38000000003,
+    "avg_cpa": "R$ 765,99",
+    "avg_cpa_raw": 765.9948371282418,
+    "avg_cpm": "R$ 23,38",
+    "avg_cpm_raw": 23.378399907008394,
+    "avg_cpc": "R$ 2,66",
+    "avg_cpc_raw": 2.656013395569518,
+    "avg_hook_rate": "78.82%",
+    "avg_hook_rate_raw": 0.7881595056208894,
     "matched_with_score": 17,
     "unmatched": 26,
     "total_videos": 38,
@@ -33,19 +33,19 @@
       "sha256": "6acf94d9f480214cddf770c42c6f0ef1f6d1ac2906192aefd13822e7eb35fad2",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 3.84,
+        "performance_score": 6.56,
         "spend": 3149.2,
         "spend_br": "R$ 3.149,20",
-        "share_spend": "1.55%",
+        "share_spend": "1.37%",
         "cac": 1049.7333333333331,
         "cac_br": "R$ 1.049,73",
-        "cac_vs_avg": "1.53x",
+        "cac_vs_avg": "1.37x",
         "cpm": 20.96391958460924,
         "cpm_br": "R$ 20,96",
-        "cpm_vs_avg": "0.87x",
+        "cpm_vs_avg": "0.90x",
         "cpc": 0.7867099675243567,
         "cpc_br": "R$ 0,79",
-        "cpc_vs_avg": "0.27x",
+        "cpc_vs_avg": "0.30x",
         "ctr": 0.0266475835441352,
         "ctr_pct": "2.66%",
         "hook_rate": 0.624257755292238,
@@ -94,8 +94,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237608163310476",
@@ -109,19 +109,19 @@
       "sha256": "78fc34af2358da7464d207d355789eb386be8b15c3177ed6b104c35e154818f7",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 1.7,
+        "performance_score": 8.08,
         "spend": 1365.73,
         "spend_br": "R$ 1.365,73",
-        "share_spend": "0.67%",
-        "cac": 1365.73,
-        "cac_br": "R$ 1.365,73",
-        "cac_vs_avg": "1.99x",
+        "share_spend": "0.59%",
+        "cac": 682.865,
+        "cac_br": "R$ 682,87",
+        "cac_vs_avg": "0.89x",
         "cpm": 16.840489284569287,
         "cpm_br": "R$ 16,84",
-        "cpm_vs_avg": "0.70x",
+        "cpm_vs_avg": "0.72x",
         "cpc": 0.4309656042915746,
         "cpc_br": "R$ 0,43",
-        "cpc_vs_avg": "0.15x",
+        "cpc_vs_avg": "0.16x",
         "ctr": 0.0390761794372241,
         "ctr_pct": "3.91%",
         "hook_rate": 0.6869589878911934,
@@ -133,8 +133,8 @@
         "bounce_rate_pct": "0.00%",
         "impressions": 81098,
         "clicks": 3169,
-        "purchases": 1,
-        "checkouts": 16,
+        "purchases": 2,
+        "checkouts": 17,
         "video_p25": 0,
         "video_p50": 0,
         "video_p75": 0,
@@ -170,8 +170,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237575846270476",
@@ -185,19 +185,19 @@
       "sha256": "036c75e3a177f66820c881ffb5b2a339ff40a209e6f45400163a0a19b65fe0e1",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 7.37,
+        "performance_score": 8.73,
         "spend": 3164.91,
         "spend_br": "R$ 3.164,91",
-        "share_spend": "1.56%",
+        "share_spend": "1.37%",
         "cac": 527.485,
         "cac_br": "R$ 527,49",
-        "cac_vs_avg": "0.77x",
+        "cac_vs_avg": "0.69x",
         "cpm": 19.240159275357914,
         "cpm_br": "R$ 19,24",
-        "cpm_vs_avg": "0.80x",
+        "cpm_vs_avg": "0.82x",
         "cpc": 0.3933030943208649,
         "cpc_br": "R$ 0,39",
-        "cpc_vs_avg": "0.14x",
+        "cpc_vs_avg": "0.15x",
         "ctr": 0.0489194200431624,
         "ctr_pct": "4.89%",
         "hook_rate": 0.8791027082890057,
@@ -246,8 +246,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237575846280476",
@@ -261,19 +261,19 @@
       "sha256": "b8a7448b4b28b883199e26715126fd39bf4174c380c0819d6b15a01cb5c0a165",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 6.01,
+        "performance_score": 7.89,
         "spend": 5102.6,
         "spend_br": "R$ 5.102,60",
-        "share_spend": "2.51%",
+        "share_spend": "2.21%",
         "cac": 728.9428571428572,
         "cac_br": "R$ 728,94",
-        "cac_vs_avg": "1.06x",
+        "cac_vs_avg": "0.95x",
         "cpm": 12.454418089245356,
         "cpm_br": "R$ 12,45",
-        "cpm_vs_avg": "0.52x",
+        "cpm_vs_avg": "0.53x",
         "cpc": 0.2542401594419531,
         "cpc_br": "R$ 0,25",
-        "cpc_vs_avg": "0.09x",
+        "cpc_vs_avg": "0.10x",
         "ctr": 0.0489868245700533,
         "ctr_pct": "4.90%",
         "hook_rate": 0.8862661153716603,
@@ -322,8 +322,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237267146520476",
@@ -337,19 +337,19 @@
       "sha256": "4b589019eeab2e44af3184f5a7386fc01674807df43a54fe926befff26bb6505",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 8.52,
+        "performance_score": 9.44,
         "spend": 2147.72,
         "spend_br": "R$ 2.147,72",
-        "share_spend": "1.06%",
+        "share_spend": "0.93%",
         "cac": 357.9533333333333,
         "cac_br": "R$ 357,95",
-        "cac_vs_avg": "0.52x",
+        "cac_vs_avg": "0.47x",
         "cpm": 28.33179431707253,
         "cpm_br": "R$ 28,33",
-        "cpm_vs_avg": "1.18x",
+        "cpm_vs_avg": "1.21x",
         "cpc": 3.181807407407407,
         "cpc_br": "R$ 3,18",
-        "cpc_vs_avg": "1.10x",
+        "cpc_vs_avg": "1.20x",
         "ctr": 0.0089043083660923,
         "ctr_pct": "0.89%",
         "hook_rate": 0.5410785425955729,
@@ -398,8 +398,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237473436640476",
@@ -413,19 +413,19 @@
       "sha256": "b8a7448b4b28b883199e26715126fd39bf4174c380c0819d6b15a01cb5c0a165",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 4.11,
+        "performance_score": 6.72,
         "spend": 18182.75,
         "spend_br": "R$ 18.182,75",
-        "share_spend": "8.94%",
+        "share_spend": "7.89%",
         "cac": 1010.1527777777778,
         "cac_br": "R$ 1.010,15",
-        "cac_vs_avg": "1.47x",
+        "cac_vs_avg": "1.32x",
         "cpm": 20.546037406664137,
         "cpm_br": "R$ 20,55",
-        "cpm_vs_avg": "0.85x",
+        "cpm_vs_avg": "0.88x",
         "cpc": 0.685779210982877,
         "cpc_br": "R$ 0,69",
-        "cpc_vs_avg": "0.24x",
+        "cpc_vs_avg": "0.26x",
         "ctr": 0.0299601345121223,
         "ctr_pct": "3.00%",
         "hook_rate": 0.8304439894415215,
@@ -474,8 +474,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237266447640476",
@@ -489,19 +489,19 @@
       "sha256": "54a2172ec65343e2d141f0793f72933de45805d7cb8c1c263fdcb3ef48b1863a",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 8.7,
+        "performance_score": 9.55,
         "spend": 15866.46,
         "spend_br": "R$ 15.866,46",
-        "share_spend": "7.80%",
+        "share_spend": "6.89%",
         "cac": 330.55125,
         "cac_br": "R$ 330,55",
-        "cac_vs_avg": "0.48x",
+        "cac_vs_avg": "0.43x",
         "cpm": 17.814992634377695,
         "cpm_br": "R$ 17,81",
-        "cpm_vs_avg": "0.74x",
+        "cpm_vs_avg": "0.76x",
         "cpc": 1.5491564147627417,
         "cpc_br": "R$ 1,55",
-        "cpc_vs_avg": "0.54x",
+        "cpc_vs_avg": "0.58x",
         "ctr": 0.011499802385743,
         "ctr_pct": "1.15%",
         "hook_rate": 0.7407491825955734,
@@ -550,8 +550,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237473436630476",
@@ -565,19 +565,19 @@
       "sha256": "036c75e3a177f66820c881ffb5b2a339ff40a209e6f45400163a0a19b65fe0e1",
       "status": "PAUSED",
       "kpis": {
-        "performance_score": 4.11,
+        "performance_score": 6.73,
         "spend": 6053.33,
         "spend_br": "R$ 6.053,33",
-        "share_spend": "2.98%",
+        "share_spend": "2.63%",
         "cac": 1008.8883333333332,
         "cac_br": "R$ 1.008,89",
-        "cac_vs_avg": "1.47x",
+        "cac_vs_avg": "1.32x",
         "cpm": 22.412435946802525,
         "cpm_br": "R$ 22,41",
-        "cpm_vs_avg": "0.93x",
+        "cpm_vs_avg": "0.96x",
         "cpc": 1.0109101536406149,
         "cpc_br": "R$ 1,01",
-        "cpc_vs_avg": "0.35x",
+        "cpc_vs_avg": "0.38x",
         "ctr": 0.0221705518201475,
         "ctr_pct": "2.22%",
         "hook_rate": 0.8131608957080655,
@@ -626,8 +626,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237474198000476",
@@ -641,32 +641,32 @@
       "sha256": "922afc98ee7816181868900507513d7019fb1990862ff58ff98ba384eeb1022f",
       "status": "ACTIVE",
       "kpis": {
-        "performance_score": 4.07,
-        "spend": 10154.93,
-        "spend_br": "R$ 10.154,93",
-        "share_spend": "4.99%",
-        "cac": 1015.493,
-        "cac_br": "R$ 1.015,49",
-        "cac_vs_avg": "1.48x",
-        "cpm": 27.43018827152157,
-        "cpm_br": "R$ 27,43",
-        "cpm_vs_avg": "1.14x",
-        "cpc": 1.5919313372001882,
-        "cpc_br": "R$ 1,59",
-        "cpc_vs_avg": "0.55x",
-        "ctr": 0.0172307609194781,
-        "ctr_pct": "1.72%",
-        "hook_rate": 0.7279787147835013,
-        "hook_rate_pct": "72.80%",
+        "performance_score": 6.31,
+        "spend": 12210.51,
+        "spend_br": "R$ 12.210,51",
+        "share_spend": "5.30%",
+        "cac": 1110.0463636363636,
+        "cac_br": "R$ 1.110,05",
+        "cac_vs_avg": "1.45x",
+        "cpm": 26.79676784346601,
+        "cpm_br": "R$ 26,80",
+        "cpm_vs_avg": "1.15x",
+        "cpc": 1.4858250182526165,
+        "cpc_br": "R$ 1,49",
+        "cpc_vs_avg": "0.56x",
+        "ctr": 0.0180349418769243,
+        "ctr_pct": "1.80%",
+        "hook_rate": 0.7252601109133563,
+        "hook_rate_pct": "72.53%",
         "hook_rate_vs_avg": "0.92x",
-        "connect_rate": 0.6587385856869824,
-        "connect_rate_pct": "65.87%",
+        "connect_rate": 0.6638200032846115,
+        "connect_rate_pct": "66.38%",
         "bounce_rate": 0.0,
         "bounce_rate_pct": "0.00%",
-        "impressions": 370210,
-        "clicks": 6379,
-        "purchases": 10,
-        "checkouts": 179,
+        "impressions": 455671,
+        "clicks": 8218,
+        "purchases": 11,
+        "checkouts": 197,
         "video_p25": 0,
         "video_p50": 0,
         "video_p75": 0,
@@ -702,8 +702,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237473743310476",
@@ -717,32 +717,32 @@
       "sha256": "922afc98ee7816181868900507513d7019fb1990862ff58ff98ba384eeb1022f",
       "status": "TOP_PERFORMER",
       "kpis": {
-        "performance_score": 7.05,
-        "spend": 3447.31,
-        "spend_br": "R$ 3.447,31",
-        "share_spend": "1.69%",
-        "cac": 574.5516666666666,
-        "cac_br": "R$ 574,55",
-        "cac_vs_avg": "0.84x",
-        "cpm": 21.94452932039824,
-        "cpm_br": "R$ 21,94",
-        "cpm_vs_avg": "0.91x",
-        "cpc": 1.28678984695782,
-        "cpc_br": "R$ 1,29",
-        "cpc_vs_avg": "0.44x",
-        "ctr": 0.0170537010159651,
-        "ctr_pct": "1.71%",
-        "hook_rate": 0.800339928194943,
-        "hook_rate_pct": "80.03%",
+        "performance_score": 8.36,
+        "spend": 3695.86,
+        "spend_br": "R$ 3.695,86",
+        "share_spend": "1.60%",
+        "cac": 615.9766666666667,
+        "cac_br": "R$ 615,98",
+        "cac_vs_avg": "0.80x",
+        "cpm": 22.096628582019505,
+        "cpm_br": "R$ 22,10",
+        "cpm_vs_avg": "0.95x",
+        "cpc": 1.209378272251309,
+        "cpc_br": "R$ 1,21",
+        "cpc_vs_avg": "0.46x",
+        "ctr": 0.0182710646362826,
+        "ctr_pct": "1.83%",
+        "hook_rate": 0.801350002092563,
+        "hook_rate_pct": "80.14%",
         "hook_rate_vs_avg": "1.02x",
-        "connect_rate": 0.6490236382322713,
-        "connect_rate_pct": "64.90%",
+        "connect_rate": 0.6518166089965398,
+        "connect_rate_pct": "65.18%",
         "bounce_rate": 0.0,
         "bounce_rate_pct": "0.00%",
-        "impressions": 157092,
-        "clicks": 2679,
+        "impressions": 167259,
+        "clicks": 3056,
         "purchases": 6,
-        "checkouts": 63,
+        "checkouts": 68,
         "video_p25": 0,
         "video_p50": 0,
         "video_p75": 0,
@@ -778,8 +778,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237534967490476",
@@ -793,19 +793,19 @@
       "sha256": "b8a7448b4b28b883199e26715126fd39bf4174c380c0819d6b15a01cb5c0a165",
       "status": "ACTIVE",
       "kpis": {
-        "performance_score": 4.01,
+        "performance_score": 6.66,
         "spend": 5123.79,
         "spend_br": "R$ 5.123,79",
-        "share_spend": "2.52%",
+        "share_spend": "2.22%",
         "cac": 1024.758,
         "cac_br": "R$ 1.024,76",
-        "cac_vs_avg": "1.49x",
+        "cac_vs_avg": "1.34x",
         "cpm": 18.34833178753165,
         "cpm_br": "R$ 18,35",
-        "cpm_vs_avg": "0.76x",
+        "cpm_vs_avg": "0.78x",
         "cpc": 0.6680299869621903,
         "cpc_br": "R$ 0,67",
-        "cpc_vs_avg": "0.23x",
+        "cpc_vs_avg": "0.25x",
         "ctr": 0.0274663295744688,
         "ctr_pct": "2.75%",
         "hook_rate": 0.8830729343851946,
@@ -854,8 +854,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237534967370476",
@@ -869,19 +869,19 @@
       "sha256": "036c75e3a177f66820c881ffb5b2a339ff40a209e6f45400163a0a19b65fe0e1",
       "status": "ACTIVE",
       "kpis": {
-        "performance_score": 8.03,
+        "performance_score": 9.13,
         "spend": 1291.99,
         "spend_br": "R$ 1.291,99",
-        "share_spend": "0.64%",
+        "share_spend": "0.56%",
         "cac": 430.66333333333336,
         "cac_br": "R$ 430,66",
-        "cac_vs_avg": "0.63x",
+        "cac_vs_avg": "0.56x",
         "cpm": 19.196333055984784,
         "cpm_br": "R$ 19,20",
-        "cpm_vs_avg": "0.80x",
+        "cpm_vs_avg": "0.82x",
         "cpc": 0.8965926439972242,
         "cpc_br": "R$ 0,90",
-        "cpc_vs_avg": "0.31x",
+        "cpc_vs_avg": "0.34x",
         "ctr": 0.0214103173659812,
         "ctr_pct": "2.14%",
         "hook_rate": 0.8731278973017949,
@@ -930,8 +930,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237447641750476",
@@ -945,19 +945,19 @@
       "sha256": "b8a7448b4b28b883199e26715126fd39bf4174c380c0819d6b15a01cb5c0a165",
       "status": "ACTIVE",
       "kpis": {
-        "performance_score": 9.19,
+        "performance_score": 9.85,
         "spend": 2334.75,
         "spend_br": "R$ 2.334,75",
-        "share_spend": "1.15%",
+        "share_spend": "1.01%",
         "cac": 259.4166666666667,
         "cac_br": "R$ 259,42",
-        "cac_vs_avg": "0.38x",
+        "cac_vs_avg": "0.34x",
         "cpm": 19.839651260611312,
         "cpm_br": "R$ 19,84",
-        "cpm_vs_avg": "0.82x",
+        "cpm_vs_avg": "0.85x",
         "cpc": 1.120859337493999,
         "cpc_br": "R$ 1,12",
-        "cpc_vs_avg": "0.39x",
+        "cpc_vs_avg": "0.42x",
         "ctr": 0.0177003934364935,
         "ctr_pct": "1.77%",
         "hook_rate": 0.8880617941723813,
@@ -1006,8 +1006,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237447641810476",
@@ -1021,19 +1021,19 @@
       "sha256": "036c75e3a177f66820c881ffb5b2a339ff40a209e6f45400163a0a19b65fe0e1",
       "status": "ACTIVE",
       "kpis": {
-        "performance_score": 8.54,
+        "performance_score": 9.45,
         "spend": 1066.94,
         "spend_br": "R$ 1.066,94",
-        "share_spend": "0.52%",
+        "share_spend": "0.46%",
         "cac": 355.6466666666667,
         "cac_br": "R$ 355,65",
-        "cac_vs_avg": "0.52x",
+        "cac_vs_avg": "0.46x",
         "cpm": 21.540418315432447,
         "cpm_br": "R$ 21,54",
-        "cpm_vs_avg": "0.89x",
+        "cpm_vs_avg": "0.92x",
         "cpc": 1.5621376281112738,
         "cpc_br": "R$ 1,56",
-        "cpc_vs_avg": "0.54x",
+        "cpc_vs_avg": "0.59x",
         "ctr": 0.0137890656545263,
         "ctr_pct": "1.38%",
         "hook_rate": 0.8613421626423322,
@@ -1082,8 +1082,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120218691006170476",
@@ -1119,8 +1119,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120223304515650476",
@@ -1156,8 +1156,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120223305649030476",
@@ -1193,8 +1193,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222658070970476",
@@ -1230,8 +1230,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222658002420476",
@@ -1267,8 +1267,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222656201380476",
@@ -1304,8 +1304,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222658190030476",
@@ -1341,8 +1341,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222657831260476",
@@ -1378,8 +1378,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222237425440476",
@@ -1415,8 +1415,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204795270476",
@@ -1452,8 +1452,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222233800250476",
@@ -1489,8 +1489,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222205078400476",
@@ -1526,8 +1526,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222203709610476",
@@ -1563,8 +1563,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204671570476",
@@ -1600,8 +1600,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204730370476",
@@ -1637,8 +1637,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204531580476",
@@ -1674,8 +1674,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204880450476",
@@ -1711,8 +1711,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222204627440476",
@@ -1748,8 +1748,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120222205116190476",
@@ -1785,8 +1785,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120217386319920476",
@@ -1822,8 +1822,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120216134782910476",
@@ -1859,8 +1859,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120216134673440476",
@@ -1896,8 +1896,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120216134530970476",
@@ -1933,8 +1933,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120216134734250476",
@@ -1970,8 +1970,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237291827630476",
@@ -1994,7 +1994,7 @@
         "cac_vs_avg": "N/A",
         "cpm": 14.102564102564102,
         "cpm_br": "R$ 14,10",
-        "cpm_vs_avg": "0.59x",
+        "cpm_vs_avg": "0.60x",
         "cpc": 0.0,
         "cpc_br": "N/A",
         "cpc_vs_avg": "N/A",
@@ -2070,10 +2070,10 @@
         "cac_vs_avg": "N/A",
         "cpm": 20.0796812749004,
         "cpm_br": "R$ 20,08",
-        "cpm_vs_avg": "0.83x",
+        "cpm_vs_avg": "0.86x",
         "cpc": 5.04,
         "cpc_br": "R$ 5,04",
-        "cpc_vs_avg": "1.74x",
+        "cpc_vs_avg": "1.90x",
         "ctr": 0.0039840637450199,
         "ctr_pct": "0.40%",
         "hook_rate": 0.0,
@@ -2183,7 +2183,7 @@
         "cac_vs_avg": "N/A",
         "cpm": 17.11111111111111,
         "cpm_br": "R$ 17,11",
-        "cpm_vs_avg": "0.71x",
+        "cpm_vs_avg": "0.73x",
         "cpc": 0.0,
         "cpc_br": "N/A",
         "cpc_vs_avg": "N/A",
