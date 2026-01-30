@@ -257,7 +257,61 @@
       "analyzed_at": "2026-01-24T22:36:31Z",
       "status": "ACTIVE",
       "score": 0
+    },
+    "120237802404630476_37b0faf5ff0cb09a06bd53a4f0b62cf8b847ed3dade160bf11a7900e77344bbc": {
+      "ad_id": "120237802404630476",
+      "analyzed_at": "2026-01-30T11:47:07Z",
+      "status": "PAUSED",
+      "score": null
+    },
+    "120237803979550476_4d8329f39d2a7d3851e60a2ea8347eb98f23f9132939b997f9ab869ecdda7327": {
+      "ad_id": "120237803979550476",
+      "analyzed_at": "2026-01-30T11:47:29Z",
+      "status": "ACTIVE",
+      "score": 3.35
+    },
+    "120237802391000476_bfa67035322d713c24d7428f8f3a670d48024daafa569ff1b3f93c5dd7381cdd": {
+      "ad_id": "120237802391000476",
+      "analyzed_at": "2026-01-30T11:47:52Z",
+      "status": "ACTIVE",
+      "score": 5.9
+    },
+    "120237802404640476_a65a6a8603c4e12aef469906f3f6d336f3ca84541896fb7be2ebc0e4747f7e11": {
+      "ad_id": "120237802404640476",
+      "analyzed_at": "2026-01-30T11:48:10Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120237775205760476_cc023e1e647c59e754019ddaba7a3e37f3a370a68bf40d381aed5697e9f3699b": {
+      "ad_id": "120237775205760476",
+      "analyzed_at": "2026-01-30T11:48:27Z",
+      "status": "PAUSED",
+      "score": 1.96
+    },
+    "120237779619690476_37b0faf5ff0cb09a06bd53a4f0b62cf8b847ed3dade160bf11a7900e77344bbc": {
+      "ad_id": "120237779619690476",
+      "analyzed_at": "2026-01-30T11:48:41Z",
+      "status": "PAUSED",
+      "score": 2.35
+    },
+    "120237779582770476_a65a6a8603c4e12aef469906f3f6d336f3ca84541896fb7be2ebc0e4747f7e11": {
+      "ad_id": "120237779582770476",
+      "analyzed_at": "2026-01-30T11:49:02Z",
+      "status": "PAUSED",
+      "score": 5.98
+    },
+    "120237782558430476_510cb0e0532b0b6e10cf2a404ee93d62755c1cf4d142aef5ae7ec9632020a6bc": {
+      "ad_id": "120237782558430476",
+      "analyzed_at": "2026-01-30T11:49:18Z",
+      "status": "ACTIVE",
+      "score": 8.02
+    },
+    "120237778815020476_533d60c4f95cfbb7b64bab88f111e139e33d2733b9ca5717984f37e47f0160ee": {
+      "ad_id": "120237778815020476",
+      "analyzed_at": "2026-01-30T11:49:37Z",
+      "status": "ACTIVE",
+      "score": 3.34
     }
   },
-  "last_updated": "2026-01-26T09:59:38Z"
+  "last_updated": "2026-01-30T11:46:46Z"
 }

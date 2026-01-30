@@ -1,10 +1,10 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-01-26T09:59:38Z
-Total de criativos: 43
+Data/Hora (UTC): 2026-01-30T11:46:46Z
+Total de criativos: 52
 
-✅ Analisados nesta execução: 0
+✅ Analisados nesta execução: 9
 ⏭️ Pulados (já processados): 43
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
@@ -13,10 +13,18 @@ Total de criativos: 43
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 0
+🏆 TOP PERFORMERS (score >= 7): 1
+  - WL414_MotionLeveSaudavel_VAR1_January_BR_VID_FB_No... (score: 8.02)
 
-📊 MÉDIOS (score 4-7): 0
+📊 MÉDIOS (score 4-7): 2
+  - WL416_MedoDaComida_VAR2_January_BR_VID_FB_Partners... (score: 5.9)
+  - WL412_AlimentacaoNoProcesso_VAR2_January_BR_VID_FB... (score: 5.98)
 
-⚠️ BAIXO DESEMPENHO (score < 4): 0
+⚠️ BAIXO DESEMPENHO (score < 4): 6
+  - WL413_AlimentacaoNoProcesso_VAR4_January_BR_VID_FB... (score: None)
+  - WL417_MedoAcompanhamentoVoy_VAR4_January_BR_VID_FB... (score: 3.35)
+  - WL412_AlimentacaoNoProcesso_VAR2_January_BR_VID_FB... (score: None)
+  - WL410_CompulsãoAbravanel_VAR2_January_BR_VID_FB_Pa... (score: 1.96)
+  - WL413_AlimentacaoNoProcesso_VAR4_January_BR_VID_FB... (score: 2.35)
 
 ============================================================
