@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-02-02T11:24:28Z
+Data/Hora (UTC): 2026-02-02T12:35:32Z
 Total de criativos: 56
 
-✅ Analisados nesta execução: 4
-⏭️ Pulados (já processados): 52
+✅ Analisados nesta execução: 0
+⏭️ Pulados (já processados): 56
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -13,14 +13,10 @@ Total de criativos: 56
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 1
-  - WL419_16kgEm6Sanfona_VAR1_January_BR_VID_FB_Normal... (score: 7.77)
+🏆 TOP PERFORMERS (score >= 7): 0
 
-📊 MÉDIOS (score 4-7): 1
-  - WL420_Obesidade_VAR1_January_BR_VID_FB_Normal_Cust... (score: 5.85)
+📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 2
-  - WL421_EuJáTentei_VAR1_January_BR_VID_FB_Normal_Cus... (score: None)
-  - WL418_15kgEm6_VAR1_January_BR_VID_FB_Normal_Custom... (score: None)
+⚠️ BAIXO DESEMPENHO (score < 4): 0
 
 ============================================================
