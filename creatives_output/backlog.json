@@ -311,7 +311,31 @@
       "analyzed_at": "2026-01-30T11:49:37Z",
       "status": "ACTIVE",
       "score": 3.34
+    },
+    "120237921236050476_6ff6daf908fc9cb035dd386966bfb279fc2678d94d4319a533394ba74b45bc79": {
+      "ad_id": "120237921236050476",
+      "analyzed_at": "2026-02-02T11:24:50Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120237921090300476_4f571b6ff952a3961b07cde2fa12c44c4e76995c6d8cfd43695b70a449089545": {
+      "ad_id": "120237921090300476",
+      "analyzed_at": "2026-02-02T11:25:08Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120237921207260476_e19e4882abe5fd02f531656701fd4ec49f67f5d2ea846e22a107b5821c8f2c6c": {
+      "ad_id": "120237921207260476",
+      "analyzed_at": "2026-02-02T11:25:28Z",
+      "status": "ACTIVE",
+      "score": 5.85
+    },
+    "120237921156730476_6547253a2c1407a6bdf19f270852954c76cfe5d88bf2a0347661c3becf51f622": {
+      "ad_id": "120237921156730476",
+      "analyzed_at": "2026-02-02T11:25:48Z",
+      "status": "ACTIVE",
+      "score": 7.77
     }
   },
-  "last_updated": "2026-01-30T11:46:46Z"
+  "last_updated": "2026-02-02T11:24:28Z"
 }

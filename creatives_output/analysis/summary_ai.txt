@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-01-30T11:46:46Z
-Total de criativos: 52
+Data/Hora (UTC): 2026-02-02T11:24:28Z
+Total de criativos: 56
 
-✅ Analisados nesta execução: 9
-⏭️ Pulados (já processados): 43
+✅ Analisados nesta execução: 4
+⏭️ Pulados (já processados): 52
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -14,17 +14,13 @@ CRIATIVOS ANALISADOS:
 ============================================================
 
 🏆 TOP PERFORMERS (score >= 7): 1
-  - WL414_MotionLeveSaudavel_VAR1_January_BR_VID_FB_No... (score: 8.02)
+  - WL419_16kgEm6Sanfona_VAR1_January_BR_VID_FB_Normal... (score: 7.77)
 
-📊 MÉDIOS (score 4-7): 2
-  - WL416_MedoDaComida_VAR2_January_BR_VID_FB_Partners... (score: 5.9)
-  - WL412_AlimentacaoNoProcesso_VAR2_January_BR_VID_FB... (score: 5.98)
+📊 MÉDIOS (score 4-7): 1
+  - WL420_Obesidade_VAR1_January_BR_VID_FB_Normal_Cust... (score: 5.85)
 
-⚠️ BAIXO DESEMPENHO (score < 4): 6
-  - WL413_AlimentacaoNoProcesso_VAR4_January_BR_VID_FB... (score: None)
-  - WL417_MedoAcompanhamentoVoy_VAR4_January_BR_VID_FB... (score: 3.35)
-  - WL412_AlimentacaoNoProcesso_VAR2_January_BR_VID_FB... (score: None)
-  - WL410_CompulsãoAbravanel_VAR2_January_BR_VID_FB_Pa... (score: 1.96)
-  - WL413_AlimentacaoNoProcesso_VAR4_January_BR_VID_FB... (score: 2.35)
+⚠️ BAIXO DESEMPENHO (score < 4): 2
+  - WL421_EuJáTentei_VAR1_January_BR_VID_FB_Normal_Cus... (score: None)
+  - WL418_15kgEm6_VAR1_January_BR_VID_FB_Normal_Custom... (score: None)
 
 ============================================================
