@@ -335,7 +335,49 @@
       "analyzed_at": "2026-02-02T11:25:48Z",
       "status": "ACTIVE",
       "score": 7.77
+    },
+    "120238194607940476_0ed23d1733aba84b695aecb9fe3521b0e67fa81b700bece7cb1785c13bdfcbfd": {
+      "ad_id": "120238194607940476",
+      "analyzed_at": "2026-02-09T12:43:43Z",
+      "status": "ACTIVE",
+      "score": 8.02
+    },
+    "120238194073470476_5a5ed0b2ff6ab67a9cad70d2897fc79d69a6e440f2985c48688969a5e32afdb4": {
+      "ad_id": "120238194073470476",
+      "analyzed_at": "2026-02-09T12:44:04Z",
+      "status": "TOP_PERFORMER",
+      "score": 9.01
+    },
+    "120238194029900476_d7102072a3393e128f48ed1d67677aa816a60fe2764d175e8b44a54685f27c22": {
+      "ad_id": "120238194029900476",
+      "analyzed_at": "2026-02-09T12:44:25Z",
+      "status": "TOP_PERFORMER",
+      "score": 8.88
+    },
+    "120238193945920476_d7102072a3393e128f48ed1d67677aa816a60fe2764d175e8b44a54685f27c22": {
+      "ad_id": "120238193945920476",
+      "analyzed_at": "2026-02-09T12:44:48Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120238194045630476_d7102072a3393e128f48ed1d67677aa816a60fe2764d175e8b44a54685f27c22": {
+      "ad_id": "120238194045630476",
+      "analyzed_at": "2026-02-09T12:45:06Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120238187917420476_4d8329f39d2a7d3851e60a2ea8347eb98f23f9132939b997f9ab869ecdda7327": {
+      "ad_id": "120238187917420476",
+      "analyzed_at": "2026-02-09T12:45:30Z",
+      "status": "TOP_PERFORMER",
+      "score": 9.25
+    },
+    "120238187917440476_bfa67035322d713c24d7428f8f3a670d48024daafa569ff1b3f93c5dd7381cdd": {
+      "ad_id": "120238187917440476",
+      "analyzed_at": "2026-02-09T12:45:53Z",
+      "status": "ACTIVE",
+      "score": null
     }
   },
-  "last_updated": "2026-02-02T12:35:32Z"
+  "last_updated": "2026-02-09T12:43:21Z"
 }

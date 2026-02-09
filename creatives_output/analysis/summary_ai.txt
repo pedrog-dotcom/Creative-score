@@ -1,10 +1,10 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-02-02T12:35:32Z
-Total de criativos: 56
+Data/Hora (UTC): 2026-02-09T12:43:21Z
+Total de criativos: 63
 
-✅ Analisados nesta execução: 0
+✅ Analisados nesta execução: 7
 ⏭️ Pulados (já processados): 56
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
@@ -13,10 +13,17 @@ Total de criativos: 56
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 0
+🏆 TOP PERFORMERS (score >= 7): 4
+  - WL434_Tratamento6Meses_VAR1_January_BR_VID_FB_Part... (score: 8.02)
+  - WL433_DiferençaEntreAsMalus_VAR4_January_BR_VID_FB... (score: 9.01)
+  - WL431_DiferençaEntreAsMalus_VAR2_January_BR_VID_FB... (score: 8.88)
+  - WL417_MedoAcompanhamentoVoy_VAR4_January_BR_VID_FB... (score: 9.25)
 
 📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 0
+⚠️ BAIXO DESEMPENHO (score < 4): 3
+  - WL430_DiferençaEntreAsMalus_VAR1_January_BR_VID_FB... (score: None)
+  - WL432_DiferençaEntreAsMalus_VAR3_January_BR_VID_FB... (score: None)
+  - WL416_MedoDaComida_VAR2_January_BR_VID_FB_Partners... (score: None)
 
 ============================================================

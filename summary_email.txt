@@ -1,19 +1,19 @@
 ============================================================
 Performance Score V2 - Resumo
 ============================================================
-Data: 2026-02-02T12-35-20Z
-Período: 2026-01-12 a 2026-02-02
+Data: 2026-02-09T12-43-06Z
+Período: 2026-01-19 a 2026-02-09
 
 Campanhas de vendas: 5
-Total de criativos: 66
-  - Ativos: 23
-  - Pausados: 32
-  - Vídeos: 27
-  - Estáticos: 39
+Total de criativos: 80
+  - Ativos: 29
+  - Pausados: 34
+  - Vídeos: 34
+  - Estáticos: 46
 
 Pausados nesta execução:
   - HARD_STOP: 0
   - LOW_SCORE: 0
 
-Ativos restantes: 23
+Ativos restantes: 29
 ============================================================
