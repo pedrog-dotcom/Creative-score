@@ -1,10 +1,10 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-02-16T12:39:33Z
-Total de criativos: 63
+Data/Hora (UTC): 2026-02-23T12:40:19Z
+Total de criativos: 70
 
-✅ Analisados nesta execução: 0
+✅ Analisados nesta execução: 7
 ⏭️ Pulados (já processados): 63
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
@@ -13,10 +13,17 @@ Total de criativos: 63
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 0
+🏆 TOP PERFORMERS (score >= 7): 1
+  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: 7.85)
 
-📊 MÉDIOS (score 4-7): 0
+📊 MÉDIOS (score 4-7): 1
+  - WL447_Balão_VAR7_February_BR_VID_FB_PartnershipAd_... (score: 6.39)
 
-⚠️ BAIXO DESEMPENHO (score < 4): 0
+⚠️ BAIXO DESEMPENHO (score < 4): 5
+  - WL443_VergonhaNaCara_VAR3_February_BR_VID_FB_Partn... (score: None)
+  - WL441_FecharABoca_VAR1_February_BR_VID_FB_Partners... (score: None)
+  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 3.07)
+  - WL445_VergonhaNaCara_VAR5_February_BR_VID_FB_Partn... (score: None)
+  - WL442_FecharABoca_VAR2_February_BR_VID_FB_Partners... (score: None)
 
 ============================================================
