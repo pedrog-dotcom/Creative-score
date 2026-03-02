@@ -419,7 +419,91 @@
       "analyzed_at": "2026-02-23T12:42:39Z",
       "status": "ACTIVE",
       "score": null
+    },
+    "120239012496810476_0db5d338dca6773cf549dfda218a6cf99e3ba0dd6f385bb3dc3ec6b6be8aabf8": {
+      "ad_id": "120239012496810476",
+      "analyzed_at": "2026-03-02T12:35:34Z",
+      "status": "ACTIVE",
+      "score": 8.29
+    },
+    "120239012577340476_cfe0aae015ff75e266d3fc0dba16b2262ce78a5556147c30293ed53f869a759d": {
+      "ad_id": "120239012577340476",
+      "analyzed_at": "2026-03-02T12:35:55Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120239012627240476_c893df91c7df37e027c1b2be46b1198e66051863af227ed361da5cbbbc2e58b6": {
+      "ad_id": "120239012627240476",
+      "analyzed_at": "2026-03-02T12:36:16Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120239012592830476_4e7e4e80d78fc0e0eba477577c2c0fa9feaaa35a10aef6fd66817cb6437b2684": {
+      "ad_id": "120239012592830476",
+      "analyzed_at": "2026-03-02T12:36:29Z",
+      "status": "TOP_PERFORMER",
+      "score": 9.12
+    },
+    "120239011450580476_fc1132c852cb99df7a7e21acfa4d9418c4d4f61aa7ac78c3cdc9e21d77bf8e06": {
+      "ad_id": "120239011450580476",
+      "analyzed_at": "2026-03-02T12:36:48Z",
+      "status": "ACTIVE",
+      "score": null
+    },
+    "120239011425600476_6ec7b8fc48acec4b02fd86d79f9d178ac8632f77b0ae9a21a87170a77ff30562": {
+      "ad_id": "120239011425600476",
+      "analyzed_at": "2026-03-02T12:37:04Z",
+      "status": "ACTIVE",
+      "score": 6.67
+    },
+    "120239011356160476_acab2f825bca8564f79e129849520eac8792dd81af9994e859875f969fad595f": {
+      "ad_id": "120239011356160476",
+      "analyzed_at": "2026-03-02T12:37:25Z",
+      "status": "ACTIVE",
+      "score": 4.67
+    },
+    "120239011119680476_fc1132c852cb99df7a7e21acfa4d9418c4d4f61aa7ac78c3cdc9e21d77bf8e06": {
+      "ad_id": "120239011119680476",
+      "analyzed_at": "2026-03-02T12:37:39Z",
+      "status": "ACTIVE",
+      "score": 8.77
+    },
+    "120239011067170476_fc1132c852cb99df7a7e21acfa4d9418c4d4f61aa7ac78c3cdc9e21d77bf8e06": {
+      "ad_id": "120239011067170476",
+      "analyzed_at": "2026-03-02T12:37:58Z",
+      "status": "TOP_PERFORMER",
+      "score": 8.87
+    },
+    "120238987040960476_a1fbb52e8546155c3f9ec2c732b015497752688324201a0037a924e03faeab86": {
+      "ad_id": "120238987040960476",
+      "analyzed_at": "2026-03-02T12:38:17Z",
+      "status": "PAUSED",
+      "score": null
+    },
+    "120238868869700476_a1fbb52e8546155c3f9ec2c732b015497752688324201a0037a924e03faeab86": {
+      "ad_id": "120238868869700476",
+      "analyzed_at": "2026-03-02T12:38:35Z",
+      "status": "PAUSED",
+      "score": 1.61
+    },
+    "120238868869710476_a7b91342f2603052e0f7d812460c45326d246ed11ca652841922c94c90e0110e": {
+      "ad_id": "120238868869710476",
+      "analyzed_at": "2026-03-02T12:38:58Z",
+      "status": "ACTIVE",
+      "score": 7.73
+    },
+    "120237474198000476_6a37b865933ce4794623ce064588d492fc3a53602a23136ea1a0af1809ac2c93": {
+      "ad_id": "120237474198000476",
+      "analyzed_at": "2026-03-02T12:39:16Z",
+      "status": "PAUSED",
+      "score": 10.0
+    },
+    "120237473743310476_bdb9f84367cd242025825ae8196317d31f68a13b04b6598859e01b3fdf0ca9eb": {
+      "ad_id": "120237473743310476",
+      "analyzed_at": "2026-03-02T12:39:35Z",
+      "status": "PAUSED",
+      "score": 10.0
     }
   },
-  "last_updated": "2026-02-23T12:40:19Z"
+  "last_updated": "2026-03-02T12:35:13Z"
 }

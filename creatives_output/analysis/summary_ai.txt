@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-02-23T12:40:19Z
-Total de criativos: 70
+Data/Hora (UTC): 2026-03-02T12:35:13Z
+Total de criativos: 82
 
-✅ Analisados nesta execução: 7
-⏭️ Pulados (já processados): 63
+✅ Analisados nesta execução: 14
+⏭️ Pulados (já processados): 68
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -13,17 +13,22 @@ Total de criativos: 70
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 1
-  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: 7.85)
+🏆 TOP PERFORMERS (score >= 7): 7
+  - WL472_TrendBia_VAR1_February_BR_VID_FB_Partnership... (score: 8.29)
+  - WL474_TrendBia_VAR3_February_BR_VID_FB_Partnership... (score: 9.12)
+  - WL468_Paraguai_VAR2_February_BR_VID_FB_Partnership... (score: 8.77)
+  - WL467_Paraguai_VAR1_February_BR_VID_FB_Partnership... (score: 8.87)
+  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 7.73)
 
-📊 MÉDIOS (score 4-7): 1
-  - WL447_Balão_VAR7_February_BR_VID_FB_PartnershipAd_... (score: 6.39)
+📊 MÉDIOS (score 4-7): 2
+  - WL470_Paraguai_VAR4_February_BR_VID_FB_Partnership... (score: 6.67)
+  - WL469_Paraguai_VAR3_February_BR_VID_FB_Partnership... (score: 4.67)
 
 ⚠️ BAIXO DESEMPENHO (score < 4): 5
-  - WL443_VergonhaNaCara_VAR3_February_BR_VID_FB_Partn... (score: None)
-  - WL441_FecharABoca_VAR1_February_BR_VID_FB_Partners... (score: None)
-  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 3.07)
-  - WL445_VergonhaNaCara_VAR5_February_BR_VID_FB_Partn... (score: None)
-  - WL442_FecharABoca_VAR2_February_BR_VID_FB_Partners... (score: None)
+  - WL473_TrendBia_VAR2_February_BR_VID_FB_Partnership... (score: None)
+  - WL475_TrendBia_VAR4_February_BR_VID_FB_Partnership... (score: None)
+  - WL471_Paraguai_VAR5_February_BR_VID_FB_Partnership... (score: None)
+  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: None)
+  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: 1.61)
 
 ============================================================
