@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-03-02T12:35:13Z
-Total de criativos: 82
+Data/Hora (UTC): 2026-03-09T12:38:58Z
+Total de criativos: 86
 
-✅ Analisados nesta execução: 14
-⏭️ Pulados (já processados): 68
+✅ Analisados nesta execução: 4
+⏭️ Pulados (já processados): 82
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -13,22 +13,14 @@ Total de criativos: 82
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 7
-  - WL472_TrendBia_VAR1_February_BR_VID_FB_Partnership... (score: 8.29)
-  - WL474_TrendBia_VAR3_February_BR_VID_FB_Partnership... (score: 9.12)
-  - WL468_Paraguai_VAR2_February_BR_VID_FB_Partnership... (score: 8.77)
-  - WL467_Paraguai_VAR1_February_BR_VID_FB_Partnership... (score: 8.87)
-  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 7.73)
+🏆 TOP PERFORMERS (score >= 7): 2
+  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 8.86)
+  - WL434_Tratamento6Meses_VAR1_January_BR_VID_FB_Part... (score: 8.37)
 
-📊 MÉDIOS (score 4-7): 2
-  - WL470_Paraguai_VAR4_February_BR_VID_FB_Partnership... (score: 6.67)
-  - WL469_Paraguai_VAR3_February_BR_VID_FB_Partnership... (score: 4.67)
+📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 5
-  - WL473_TrendBia_VAR2_February_BR_VID_FB_Partnership... (score: None)
-  - WL475_TrendBia_VAR4_February_BR_VID_FB_Partnership... (score: None)
-  - WL471_Paraguai_VAR5_February_BR_VID_FB_Partnership... (score: None)
-  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: None)
-  - WL446_Balão_VAR6_February_BR_VID_FB_PartnershipAd_... (score: 1.61)
+⚠️ BAIXO DESEMPENHO (score < 4): 2
+  - WL474_TrendBia_VAR3_February_BR_VID_FB_Partnership... (score: None)
+  - WL468_Paraguai_VAR2_February_BR_VID_FB_Partnership... (score: None)
 
 ============================================================
