@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-03-09T12:38:58Z
+Data/Hora (UTC): 2026-03-16T12:47:36Z
 Total de criativos: 86
 
-✅ Analisados nesta execução: 4
-⏭️ Pulados (já processados): 82
+✅ Analisados nesta execução: 0
+⏭️ Pulados (já processados): 86
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -13,14 +13,10 @@ Total de criativos: 86
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 2
-  - WL444_ProcessoEmagrecimento_VAR4_February_BR_VID_F... (score: 8.86)
-  - WL434_Tratamento6Meses_VAR1_January_BR_VID_FB_Part... (score: 8.37)
+🏆 TOP PERFORMERS (score >= 7): 0
 
 📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 2
-  - WL474_TrendBia_VAR3_February_BR_VID_FB_Partnership... (score: None)
-  - WL468_Paraguai_VAR2_February_BR_VID_FB_Partnership... (score: None)
+⚠️ BAIXO DESEMPENHO (score < 4): 0
 
 ============================================================
