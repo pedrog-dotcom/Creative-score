@@ -1,69 +1,47 @@
 # Playbook de Boas Práticas Criativas para Meta Ads
 
 ## 1. Resumo Executivo
-
-Este playbook oferece diretrizes para otimizar anúncios no Meta Ads, baseando-se em dados históricos e práticas atuais. A eficácia dos criativos, medida por meio de scores em pontos como clareza de oferta, prova social e call-to-action (CTA), tem sido documentada para aprimorar futuras estratégias criativas.
+Este playbook foi desenvolvido para otimizar criativos de performance em anúncios na Meta platform, baseado na análise de criativos top performers, pausados e ativos. Apesar de não haver insights claros sobre hooks específicos, identificamos narrativas e tons que se destacaram. Este guia fornecerá diretrizes para a criação de criativos mais eficazes.
 
 ## 2. O que Funciona (Top Performers)
-
-### Hooks:
-Atualmente, não há dados disponíveis sobre hooks de melhor desempenho. É crucial testar novos formatos para identificar quais têm melhor ressonância com o público.
-
-### Narrativas:
-Assim como os hooks, as narrativas também estão sem dados de desempenho notável. Experimentos devem ser conduzidos para potencializar a mensagem dos anúncios.
-
-### Tons:
-Sem informações disponíveis no momento, a transferência de experimentos de tons bem-sucedidos em outras campanhas pode beneficiar a análise.
-
-### Métricas:
-Atualmente, não há criativos classificados como Top Performers.
+- **Narrativas Utilizadas**: 
+  - Informativa
+  - Instrucional
+- **Tons**:
+  - Esclarecedor
+  - Amigável e Pessoal
+- **Característica**: Claridade na oferta e texto legível são fundamentais.
 
 ## 3. O que Evitar (Pausados)
-
-### Hooks:
-Nenhum hook específico foi listado como problemático, mas deve-se evitar reutilizar hooks de campanhas que tiveram baixa eficácia.
-
-### Problemas:
-Embora não hajam descrições específicas de problemas nos criativos pausados, atenção deve ser dada às métricas como clareza de oferta, prova social, legibilidade do texto e CTA fracos.
+- Criativos pausados devido à falta de clareza na oferta e legibilidade de texto podem ser mais comuns. Certifique-se de que o público-alvo entende rapidamente o que está sendo oferecido.
 
 ## 4. Checklist de Criação
-
-- [ ] Definir um hook claro e cativante.
-- [ ] Garantir que a oferta está claramente comunicada.
-- [ ] Incorporar prova social, como depoimentos ou selos de aprovação.
-- [ ] Assegurar a legibilidade do texto em todos os dispositivos.
-- [ ] Incluir um CTA forte e orientado para ação.
+- **Claridade na Oferta**: A mensagem principal deve ser clara e concisa.
+- **Legibilidade**: Utilize fontes legíveis e constraste de cores apropriado.
+- **Narrativa**: Escolha um tom e narrativa que melhor se adequem ao público-alvo.
+- **Chamada para Ação (CTA)**: Deve ser direto e motivador.
+- **Prova Social**: Inclua testemunhos ou avaliações para aumentar a credibilidade.
 
 ## 5. Recomendações de Hook
-
-Atualmente não existem dados definidos sobre hooks de sucesso. Recomenda-se a criação de novos hooks com base em segmentação demográfica e comportamental, além de acompanhamento de tendências e insights do setor.
+Atualmente, não há hooks específicos identificados como top performers. Recomenda-se testar diferentes approaches para descobrir quais ressoam melhor com o público.
 
 ## 6. Recomendações de Narrativa
-
-Investir na construção de narrativas que reflitam autenticidade, envolvam e conectem emocionalmente com o público. Testar mensagens de storytelling que apresentem a proposta de valor de forma envolvente.
+- **Narrativa Informativa**: Use para educar e aumentar o conhecimento sobre o produto ou serviço.
+- **Narrativa Instrucional**: Proporcione uma orientação passo a passo que ajudará o usuário a perceber o valor do produto.
 
 ## 7. Testes A/B Sugeridos
-
-- Testar variações de hooks baseados em novos temas ou abordagens emocionais.
-- Comparar diferentes tons de chamada para ação.
-- Explorar novas abordagens visuais, tais como variantes de design ou cor.
-- Experimentar com formatos de anúncios (carrossel vs vídeo vs imagem estática).
+- **Testar diferentes Narrativas**: Comparar a eficácia de uma narrativa informativa versus instrucional.
+- **Testar Tons**: Verificar a resposta a tons diferentes, como amigável versus formal.
+- **Experimentar CTAs**: Testar diferentes formatos e posicionamentos de chamada para ação.
 
 ## 8. Métricas de Referência
-
-As métricas devem abranger, mas não estão limitadas a:
-
-- CTR (Click-through rate)
-- Taxa de conversão
-- Nível de engajamento (curtidas, comentários, compartilhamentos)
-- ROI (Retorno sobre o Investimento)
-- CPC (Custo por Clique)
+- **Taxa de Clique (CTR)**: Indicador de envolvimento.
+- **Custo por Aquisição (CPA)**: Eficácia do criativo em converter.
+- **Tempo Médio de Visualização**: Indica o quão atraente é o criativo.
 
 ## 9. Próximos Passos
+- **Refinar Criativos Ativos**: Melhorar a clareza e impacto dos criativos atualmente em uso.
+- **Desenvolver Novas Estratégias de Hook**: Basear-se em insights e testes recentes para identificar hooks eficazes.
+- **Monitorar e Mensurar**: Continuar a analisar o desempenho e ajustar estratégias conforme necessário.
 
-1. Desenvolver e testar novos hooks e narrativas com base em pesquisas de mercado.
-2. Implementar um calendário de testes A/B para refletir melhorias sugeridas.
-3. Monitorar rigorosamente as métricas de performance e ajustar os criativos de acordo.
-4. Avaliar constantemente o impacto das mudanças sugeridas nas métricas de performance e ajustar as estratégias em resposta aos resultados.
-
-Com essas diretrizes, a expectativa é aumentar a eficácia das campanhas no Meta Ads, criando anúncios que não só alcancem, mas também ressoem com o público-alvo.
+Este playbook é um guia vivo e deve ser ajustado conforme novas informações e tendências emergem. O sucesso dependerá da aplicação consistente destas boas práticas e da disposição para inovar e testar novas ideias.

@@ -1,10 +1,10 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-03-16T12:47:36Z
-Total de criativos: 86
+Data/Hora (UTC): 2026-03-23T12:43:11Z
+Total de criativos: 100
 
-✅ Analisados nesta execução: 0
+✅ Analisados nesta execução: 14
 ⏭️ Pulados (já processados): 86
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
@@ -13,10 +13,20 @@ Total de criativos: 86
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 0
+🏆 TOP PERFORMERS (score >= 7): 9
+  - WL556_MedoDoJulgamento_VAR3_March_BR_VID_FB_Partne... (score: 8.62)
+  - WL554_MedoDoJulgamento_VAR1_March_BR_VID_FB_Partne... (score: 9.26)
+  - WL546_MitosEmagrecimento_VAR1_March_BR_VID_FB_Part... (score: 9.62)
+  - WL548_MitosEmagrecimento_VAR3_March_BR_VID_FB_Part... (score: 8.96)
+  - WL550_MitosEmagrecimento_VAR5_March_BR_VID_FB_Part... (score: 9.41)
 
 📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 0
+⚠️ BAIXO DESEMPENHO (score < 4): 5
+  - WL555_MedoDoJulgamento_VAR2_March_BR_VID_FB_Partne... (score: N/A)
+  - WL547_MitosEmagrecimento_VAR2_March_BR_VID_FB_Part... (score: N/A)
+  - WL549_MitosEmagrecimento_VAR4_March_BR_VID_FB_Part... (score: N/A)
+  - WL552_9kgEm1MesSobrepeso_VAR2_March_BR_VID_FB_Part... (score: None)
+  - WL544_MesDoSobrepeso_VAR2_March_BR_VID_FB_Partners... (score: None)
 
 ============================================================
