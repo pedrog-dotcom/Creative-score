@@ -1,11 +1,11 @@
 ============================================================
 RESUMO DA ANÁLISE DE IA
 ============================================================
-Data/Hora (UTC): 2026-03-30T12:56:03Z
+Data/Hora (UTC): 2026-04-06T12:46:32Z
 Total de criativos: 115
 
-✅ Analisados nesta execução: 15
-⏭️ Pulados (já processados): 100
+✅ Analisados nesta execução: 0
+⏭️ Pulados (já processados): 115
 ⚠️ Sem mídia disponível: 0
 ❌ Falhas: 0
 
@@ -13,20 +13,10 @@ Total de criativos: 115
 CRIATIVOS ANALISADOS:
 ============================================================
 
-🏆 TOP PERFORMERS (score >= 7): 7
-  - WL561_MedoDoJulgamentoWV-13pordia_VAR3_March_BR_VI... (score: 8.08)
-  - WL567_AbravanelCalça_VAR3_March_BR_VID_FB_Partners... (score: 8.77)
-  - WL566_AbravanelCalça_VAR2_March_BR_VID_FB_Partners... (score: 9.08)
-  - WL568_AbravanelCalça_VAR4_March_BR_VID_FB_Partners... (score: 8.5)
-  - WL550_MitosEmagrecimento_VAR5_March_BR_VID_FB_Part... (score: 7.44)
+🏆 TOP PERFORMERS (score >= 7): 0
 
 📊 MÉDIOS (score 4-7): 0
 
-⚠️ BAIXO DESEMPENHO (score < 4): 8
-  - WL563_MedoDoJulgamentoWV-12x195_VAR2_March_BR_VID_... (score: None)
-  - WL565_AbravanelCalça_VAR1_March_BR_VID_FB_Partners... (score: None)
-  - WL562_MedoDoJulgamentoWV-12x195_VAR1_March_BR_VID_... (score: None)
-  - WL564_MedoDoJulgamentoWV-12x195_VAR3_March_BR_VID_... (score: None)
-  - WL560_MedoDoJulgamentoWV-13pordia_VAR2_March_BR_VI... (score: None)
+⚠️ BAIXO DESEMPENHO (score < 4): 0
 
 ============================================================

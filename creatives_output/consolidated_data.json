@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-03-30T12:56:03Z",
+  "run_at": "2026-04-06T12:46:32Z",
   "metadata": {
     "total_creatives": 115,
     "total_spend": "R$ 418.354,11",
@@ -94,8 +94,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121146020476",
@@ -170,8 +170,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121237050476",
@@ -246,8 +246,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121366400476",
@@ -322,8 +322,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121296910476",
@@ -398,8 +398,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121368880476",
@@ -474,8 +474,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240120983170476",
@@ -550,8 +550,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240121181880476",
@@ -626,8 +626,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240120796550476",
@@ -702,8 +702,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240120743650476",
@@ -778,8 +778,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120239824059610476",
@@ -1801,8 +1801,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240118378200476",
@@ -1877,8 +1877,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240118180460476",
@@ -1953,8 +1953,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120240118180470476",
@@ -2029,8 +2029,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120239167132620476",
@@ -6077,8 +6077,8 @@
         "Production": "",
         "Style_Setting": ""
       },
-      "already_processed_by_ai": false,
-      "needs_ai_analysis": true
+      "already_processed_by_ai": true,
+      "needs_ai_analysis": false
     },
     {
       "ad_id": "120237291827630476",
